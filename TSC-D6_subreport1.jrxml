@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="TSC-D6_subreport1" pageWidth="555" pageHeight="802" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="0922cf29-3790-4e74-8e67-619396ffe695">
+	<property name="ireport.zoom" value="2.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<property name="ireport.callouts" value="##Wed Mar 19 16:44:18 CST 2014"/>
+	<queryString>
+		<![CDATA[select * from DECIDE_port]]>
+	</queryString>
+	<field name="stock" class="java.lang.Object"/>
+	<field name="tff" class="java.lang.Object"/>
+	<field name="pos" class="java.lang.Object"/>
+	<field name="avg_price" class="java.lang.Object"/>
+	<field name="mkt_price" class="java.lang.Object"/>
+	<field name="amount" class="java.lang.Object"/>
+	<field name="mkt_value" class="java.lang.Object"/>
+	<field name="pl" class="java.lang.Object"/>
+	<variable name="SUM_AMOUNT" class="java.lang.Double" calculation="Sum">
+		<variableExpression><![CDATA[$F{amount}]]></variableExpression>
+		<initialValueExpression><![CDATA[0.0]]></initialValueExpression>
+	</variable>
+	<variable name="SUM_MKT_VAL" class="java.lang.Double" calculation="Sum">
+		<variableExpression><![CDATA[$F{mkt_value}]]></variableExpression>
+		<initialValueExpression><![CDATA[0.0]]></initialValueExpression>
+	</variable>
+	<variable name="SUM_GAIN" class="java.lang.Double" calculation="Sum">
+		<variableExpression><![CDATA[$F{pl}]]></variableExpression>
+		<initialValueExpression><![CDATA[0.0]]></initialValueExpression>
+	</variable>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<pageHeader>
+		<band height="23">
+			<staticText>
+				<reportElement x="0" y="0" width="93" height="22" uuid="b9abe5f4-dbdb-420b-8813-938aa7806c7c"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[PORTFOLIO AS AT :]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="83" y="0" width="72" height="22" uuid="fed33728-7c16-4dca-92e2-b47594736a69"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="22">
+			<staticText>
+				<reportElement x="60" y="0" width="85" height="22" uuid="4673a97d-e2be-4f1b-a431-47697040f953"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[STOCK]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="0" width="60" height="22" uuid="12ed0061-98b8-4a68-bf93-5605a26913c7"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[NO.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="235" y="0" width="60" height="22" uuid="ae89ef38-3f92-4afe-8c6d-14dc88c3ac33"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[AVG. PRICE]]></text>
+			</staticText>
+			<line>
+				<reportElement x="0" y="21" width="555" height="1" uuid="9883760b-6285-4e42-afa2-63a2202ba846"/>
+			</line>
+			<line>
+				<reportElement x="0" y="-2" width="555" height="1" uuid="d8366c4e-d3dc-435f-aab4-8368e23c0cab"/>
+			</line>
+			<staticText>
+				<reportElement x="425" y="0" width="70" height="22" uuid="5e281a81-b3e3-4429-9211-581edf24bef5"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[MARKET VALUE]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="495" y="0" width="60" height="22" uuid="d696ad95-e554-41ae-bd03-d4994d035a61"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[GAIN/LOSS]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="175" y="0" width="60" height="22" uuid="b1bb8c71-61a3-48c2-94d1-e06729c853c5"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[POSITION]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="294" y="0" width="60" height="22" uuid="1e6bd1d0-cd70-4500-b83d-2b9f0b0fdc80"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[MKT. PRICE]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="354" y="-1" width="71" height="22" uuid="0b33c556-4d27-4b43-b4d5-02576bd4dd4b"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[AMOUNT]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="145" y="0" width="30" height="21" uuid="b188e37a-2d77-4579-90dc-cf2096c5740c"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[TFF]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="22" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="0" width="60" height="22" uuid="c959c39b-d721-41e7-a200-acfe55d80a49"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{REPORT_COUNT}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="425" y="0" width="70" height="22" uuid="f5d907b8-f0ec-4210-ad3e-f8cf99a1c864"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{mkt_value}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="175" y="0" width="60" height="22" uuid="28fc67b5-2d0c-4c49-95d4-6b4fc8572591"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{pos}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="60" y="0" width="85" height="22" uuid="8f26a3ee-28bb-4f93-bf9b-0660b644d388"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{stock}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="145" y="0" width="30" height="22" uuid="95fb3ee9-992f-4379-95fa-f54970d8f234"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{tff}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="235" y="0" width="60" height="22" uuid="7fbb5294-ee64-48b3-b30a-b2c23a52d9f9"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[(new DecimalFormat("###,###,##0.00")).format($F{avg_price})]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="295" y="0" width="59" height="22" uuid="b696984b-625b-4ee3-8106-1b9fecc7b986"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{mkt_price}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="495" y="0" width="60" height="22" uuid="7ef53bce-735e-46ed-9546-405444d8500b"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{pl}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="354" y="0" width="71" height="22" uuid="edfafcec-0305-41ba-bfd7-43f508609837"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{amount}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<summary>
+		<band height="34">
+			<staticText>
+				<reportElement x="0" y="14" width="60" height="19" uuid="5d00346a-c6b8-4c4a-94fa-37af356476ac"/>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[TOTAL]]></text>
+			</staticText>
+			<line>
+				<reportElement x="0" y="13" width="555" height="1" uuid="adc42732-1ed9-4527-97b8-876787f1786d"/>
+			</line>
+			<line>
+				<reportElement x="0" y="33" width="555" height="1" uuid="a9b0e148-6281-4856-8803-9bcec606dcfb"/>
+			</line>
+			<textField>
+				<reportElement x="354" y="14" width="71" height="20" uuid="079ecbdf-d68d-45ea-9ff1-975fe4ae98d3"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[(new DecimalFormat("###,###,##0.00")).format($V{SUM_AMOUNT})]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="425" y="14" width="70" height="20" uuid="6c98e6b5-62d0-4c64-98b9-ea24c7b44ecd"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[(new DecimalFormat("###,###,##0.00")).format($V{SUM_MKT_VAL})]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="495" y="14" width="60" height="20" uuid="41c21f9c-bc22-4435-8296-3265c116b653"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[(new DecimalFormat("###,###,##0.00")).format($V{SUM_GAIN})]]></textFieldExpression>
+			</textField>
+		</band>
+	</summary>
+</jasperReport>
