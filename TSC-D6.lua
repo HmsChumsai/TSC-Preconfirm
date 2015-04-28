@@ -46,30 +46,37 @@ function process()
   common.CheckValidTimeRange(entryFrom, entryTo)
 
   local database_tables = {}
-	
   table_name_deposit = "deposit"
   table_name_order = "DECIDE_order"
   table_name_total = "DECIDE_total"
 	table_name_port = "DECIDE_port"
+	table_name_set = "DECIDE_set"
+	table_name_set50 = "DECIDE_set50"
 	local depositList = {}
 	local orderList = {}
 	local totalList = {}
 	local portList = {}
+	local setList={}
+	local set50List={}
 	local orders = easygetter.GetOrders( depositId, entryFrom, entryTo )
+	local setItem=getMarketData('SET')
+	local set50Item=getMarketData('SET50')
 	
+	table.insert(setList,setItem)
+	table.insert(set50List,set50Item)
+
   DECIDE_deposit_obj = fo.Deposit( tonumber(depositId) )
 	depositList = getDeposit(depositId)
-	--orderList,totalList = getOrderList(orders)
   orderList,totalList = TSCReportUtil.getOrderList(orders)
 	portList = getPortList()
 	database_tables = CreateSchema()
-	--print('orderList : ',dump(orderList ))
 	common.CreateTables(db_file, log_file,  database_tables, debug_mode)
 	common.InsertRecords(db_file, log_file, table_name_total, totalList, debug_mode)
 	common.InsertRecords(db_file, log_file, table_name_deposit, depositList, debug_mode)
 	common.InsertRecords(db_file, log_file, table_name_order, orderList, debug_mode)
 	common.InsertRecords(db_file, log_file, table_name_port, portList, debug_mode)
-	
+	common.InsertRecords(db_file, log_file, table_name_set,setList,debug_mode)
+	common.InsertRecords(db_file, log_file, table_name_set50,set50List,debug_mode)
 end
 
 function CreateSchema()
@@ -78,16 +85,11 @@ function CreateSchema()
 	local sql_column_text = ' TEXT DEFAULT "" '
   local sql_column_integer = ' INTEGER DEFAULT 0'
   local sql_column_real = ' REAL DEFAULT 0.0'
---  local table_name_deposit = "deposit"
---  local table_name_order = "DECIDE_order"
---  local table_name_total = "DECIDE_total"
   local database_tables = {
   {table_name_deposit,{'account_no' .. sql_column_text,
 	'account_name' .. sql_column_text,
 	'account_type' .. sql_column_text,
   'trader_name' .. sql_column_text,
-  
-
 	}},
   {table_name_order,{
   'side' .. sql_column_text,
@@ -112,7 +114,13 @@ function CreateSchema()
   {table_name_total,{'comm' ..sql_column_real,
   'net' .. sql_column_real,
   'paid_received' .. sql_column_text
-  }}
+  }},
+	{table_name_set,{'SET_close' .. sql_column_real,
+	--'change' .. sql_column_real
+	}},
+	{table_name_set50,{'SET50_close' .. sql_column_real,
+	--'change' .. sql_column_real
+	}},
 	}
 	print ('database_tables : '  ,dump(database_tables))
 	print ('----------------- End CreateSchema ---------------') 
@@ -187,6 +195,17 @@ function getPortList()
 		end
 	print("----------------- End getPortList ------------------")
   return portList
+end
+
+function getMarketData(index)
+	local market = {}
+	local contract = fo.Contract(index)
+	local ce = fo.ContractEvaluation{ contract=contract }
+	local close = ce:getLastUnchecked()
+	table.insert(market,{index..'_close',close})
+	--table.insert(market,{'change',0})
+	print("Market : ",dump(market))	
+	return market
 end
 
 function getFee(order, orderLeg, ut)

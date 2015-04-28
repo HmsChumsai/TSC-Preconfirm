@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Last Modified Date: 20140608-00 -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="TSC-D4_subreport5" language="groovy" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="ec5d8f8e-2090-43ed-983f-9758eae58cd5">
+	<property name="ireport.zoom" value="1.8150000000000004"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<queryString>
+		<![CDATA[select * from deposit , DECIDE_order order by ccy;]]>
+	</queryString>
+	<field name="account_no" class="java.lang.Object"/>
+	<field name="account_name" class="java.lang.Object"/>
+	<field name="account_type" class="java.lang.Object"/>
+	<field name="account_officer" class="java.lang.Object"/>
+	<field name="trader_id" class="java.lang.Object"/>
+	<field name="begin_cash_bal" class="java.lang.Object"/>
+	<field name="end_cash_bal" class="java.lang.Object"/>
+	<field name="non_cash_collateral" class="java.lang.Object"/>
+	<field name="advance_withdraw" class="java.lang.Object"/>
+	<field name="end_equity_bal" class="java.lang.Object"/>
+	<field name="initial_margin" class="java.lang.Object"/>
+	<field name="maintenance_margin" class="java.lang.Object"/>
+	<field name="excess_insufficient" class="java.lang.Object"/>
+	<field name="net_customer_paid" class="java.lang.Object"/>
+	<field name="series" class="java.lang.Object"/>
+	<field name="contract_no" class="java.lang.Object"/>
+	<field name="buy_sell" class="java.lang.Object"/>
+	<field name="no_of_contract" class="java.lang.Object"/>
+	<field name="deal_price" class="java.lang.Object"/>
+	<field name="premium_amount" class="java.lang.Object"/>
+	<field name="brokerage_fee" class="java.lang.Object"/>
+	<field name="vat" class="java.lang.Object"/>
+	<field name="WH" class="java.lang.Object"/>
+	<field name="charge_amount" class="java.lang.Object"/>
+	<field name="trade_date" class="java.lang.Object"/>
+	<field name="long" class="java.lang.Object"/>
+	<field name="short" class="java.lang.Object"/>
+	<field name="future_realized_pl" class="java.lang.Object"/>
+	<field name="option_realized_pl" class="java.lang.Object"/>
+	<field name="action" class="java.lang.Object"/>
+	<field name="long_short" class="java.lang.Object"/>
+	<field name="final_settlement_price" class="java.lang.Object"/>
+	<field name="settlement_amount" class="java.lang.Object"/>
+	<field name="settlement_price" class="java.lang.Object"/>
+	<field name="unrealized_pl" class="java.lang.Object"/>
+	<field name="options_value_long" class="java.lang.Object"/>
+	<field name="options_value_short" class="java.lang.Object"/>
+	<field name="ccy" class="java.lang.Object"/>
+	<field name="amount" class="java.lang.Object"/>
+	<field name="fx_rate" class="java.lang.Object"/>
+	<field name="value_in_thb" class="java.lang.Object"/>
+	<field name="col" class="java.lang.Object"/>
+	<field name="max_settlement_require" class="java.lang.Object"/>
+	<field name="settlement_date" class="java.lang.Object"/>
+	<variable name="sum_settlement_require" class="java.lang.Double" resetType="Column" calculation="Sum">
+		<variableExpression><![CDATA[$F{max_settlement_require}]]></variableExpression>
+		<initialValueExpression><![CDATA[0.0]]></initialValueExpression>
+	</variable>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="20" splitType="Stretch">
+			<staticText>
+				<reportElement uuid="dccea3f0-b55d-4914-b51d-73d631e82634" x="0" y="0" width="254" height="20"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[OUTSTANDING FOREIGN CURRENCY COLLATERAL]]></text>
+			</staticText>
+		</band>
+	</title>
+	<columnHeader>
+		<band height="20" splitType="Stretch">
+			<staticText>
+				<reportElement uuid="c2ae2556-8034-4883-9c88-f3cbd733965f" x="0" y="0" width="70" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[CCY]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="5aec40d6-2d05-4179-81de-3480a1e9fe80" x="70" y="0" width="53" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Amount]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="2fd8a1f6-04cf-4572-8a97-86d265ea0d0f" x="123" y="0" width="60" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Fx Rate	]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="73234396-f14c-4b87-ba80-2ef9f1565099" x="183" y="0" width="71" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Value in THB]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="5ff976c0-9bea-4702-ad3d-27000dcde18a" x="254" y="0" width="76" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Col%]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="446464db-4f38-4f11-bb6a-b6e7e755875b" x="330" y="0" width="225" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Max. for Settlement Require]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="20" splitType="Stretch">
+			<textField>
+				<reportElement uuid="253128db-9310-4941-91c6-ffb7de990204" x="0" y="0" width="70" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{ccy}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="7e2a0031-7405-4e20-aa87-605c9ea46d7d" x="70" y="0" width="53" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{amount}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="5477d248-9a2c-4e15-8479-a08b2ba5005f" x="123" y="0" width="60" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{fx_rate}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="00479886-4f3e-4aed-a148-e2e2b418206c" x="183" y="0" width="71" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{value_in_thb}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="0cd4b069-4f76-4625-a096-ffada067dbb4" x="254" y="0" width="76" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{col}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="06901c44-f7cc-4b8a-baa4-7b756602c675" x="330" y="0" width="225" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{max_settlement_require}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="20">
+			<staticText>
+				<reportElement uuid="773df23a-0949-4c42-9b4e-5b3883b5fb8d" x="254" y="0" width="76" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[Total]]></text>
+			</staticText>
+			<textField>
+				<reportElement uuid="41ec88c4-c43b-49e0-b3fa-a9aa04d958fd" x="330" y="0" width="225" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$V{sum_settlement_require}]]></textFieldExpression>
+			</textField>
+		</band>
+	</columnFooter>
+</jasperReport>

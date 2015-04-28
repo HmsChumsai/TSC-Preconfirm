@@ -8,6 +8,7 @@
 		<![CDATA[select * from DECIDE_order,DECIDE_total
 order by side]]>
 	</queryString>
+	<field name="order_no" class="java.lang.Object"/>
 	<field name="side" class="java.lang.Object"/>
 	<field name="stock" class="java.lang.Object"/>
 	<field name="vol" class="java.lang.Object"/>

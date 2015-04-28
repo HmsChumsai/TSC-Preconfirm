@@ -24,12 +24,16 @@ function TSCReportUtil.getOrderList(orders,isBillOrder)
           local buy_sell = order:getBuySell()
           local execQty = orderleg:getExecQty()
           local status = orderMatchStatusToMLMapping[totalQty == execQty]
-          
+          local tran_time=0
           if (isBillOrder==1) then
             local entry=order:getEntryUser():getName()
-						print(" Entry :" .. entry)
 						vol = orderleg:getTotalQty()
             price = orderleg:getPriceLimit()
+						for _,op in pairs( order:getOrderOperations() ) do
+							if op:getTransactionType() ~= "Match" then	-- get transaction time
+								tran_time=op:getEntryTime():getClockTimeInUtcOffset(common.offsetTimeZoneSecs):toString("%T")
+							end
+						end
             time =order:getEntryTime():getClockTimeInUtcOffset(common.offsetTimeZoneSecs):toString("%T") 
             local totalQty = orderleg:getOpenQty()
             if (match_qty~= 0 ) then
@@ -39,6 +43,7 @@ function TSCReportUtil.getOrderList(orders,isBillOrder)
             end
 						table.insert(orderItem,{'entry',entry})
             table.insert(orderItem,{'time',time})
+						table.insert(orderItem,{'tran_time',tran_time})
             table.insert(orderItem, {'st', M.getStatus(order:getOrderId())})
           else
             price = orderleg:getAvgExecPrice()

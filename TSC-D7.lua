@@ -100,6 +100,7 @@ function CreateSchema()
   'match_qty' .. sql_column_integer,
   'match_price' .. sql_column_real,
   'time' .. sql_column_text,
+	'tran_time'..sql_column_text,
   'entry' .. sql_column_text,
 	'publish' .. sql_column_text,
   'condition' .. sql_column_text,
