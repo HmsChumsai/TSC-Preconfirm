@@ -18,12 +18,13 @@ order by side]]>
 	<field name="vat" class="java.lang.Object"/>
 	<field name="amount_due" class="java.lang.Object"/>
 	<field name="comm" class="java.lang.Object"/>
-	<field name="tr_fee" class="java.lang.Object"/>
-	<field name="ci_fee" class="java.lang.Object"/>
+	<field name="total_amount_due" class="java.lang.Object"/>
+	<field name="total_gross" class="java.lang.Object"/>
 	<field name="net" class="java.lang.Object"/>
 	<field name="paid_received" class="java.lang.Object"/>
 	<variable name="SUM_gross_amt" class="java.lang.Double" resetType="Group" resetGroup="series" calculation="Sum">
 		<variableExpression><![CDATA[$F{gross_amt}]]></variableExpression>
+		<initialValueExpression><![CDATA[0.0]]></initialValueExpression>
 	</variable>
 	<variable name="total_comm" class="java.lang.Double" calculation="Sum">
 		<variableExpression><![CDATA[$F{comm_fee}]]></variableExpression>
@@ -39,22 +40,31 @@ order by side]]>
 	</variable>
 	<variable name="SUM_comm_fee" class="java.lang.Double" resetType="Group" resetGroup="series" calculation="Sum">
 		<variableExpression><![CDATA[$F{comm_fee}]]></variableExpression>
+		<initialValueExpression><![CDATA[0.0]]></initialValueExpression>
 	</variable>
-	<variable name="SUM_vat" class="java.lang.Double" calculation="Sum">
+	<variable name="SUM_vat" class="java.lang.Double" resetType="Group" resetGroup="series" calculation="Sum">
 		<variableExpression><![CDATA[$F{vat}]]></variableExpression>
 		<initialValueExpression><![CDATA[0.0]]></initialValueExpression>
 	</variable>
 	<variable name="SUM_amount_due" class="java.lang.Double" resetType="Group" resetGroup="series" calculation="Sum">
 		<variableExpression><![CDATA[$F{amount_due}]]></variableExpression>
+		<initialValueExpression><![CDATA[0.0]]></initialValueExpression>
 	</variable>
 	<variable name="total_gross_amt" class="java.lang.Double" calculation="Sum">
 		<variableExpression><![CDATA[$F{gross_amt}]]></variableExpression>
+		<initialValueExpression><![CDATA[0.0]]></initialValueExpression>
 	</variable>
 	<variable name="SUM_AMOUNT_DUE" class="java.lang.Number">
 		<variableExpression><![CDATA[$V{total_comm}+$V{total_vat}+$V{SUM_NET}]]></variableExpression>
+		<initialValueExpression><![CDATA[0.0]]></initialValueExpression>
 	</variable>
 	<variable name="SUM_NET" class="java.lang.Double">
 		<variableExpression><![CDATA[$F{net}]]></variableExpression>
+		<initialValueExpression><![CDATA[0.0]]></initialValueExpression>
+	</variable>
+	<variable name="SUM_GROSS_AMT" class="java.lang.Number" calculation="Sum">
+		<variableExpression><![CDATA[$F{gross_amt}]]></variableExpression>
+		<initialValueExpression><![CDATA[0.0]]></initialValueExpression>
 	</variable>
 	<group name="session">
 		<groupExpression><![CDATA[]]></groupExpression>
@@ -125,6 +135,9 @@ order by side]]>
 					</textElement>
 					<textFieldExpression><![CDATA[(new DecimalFormat("###,###,##0.00")).format($V{SUM_vat})]]></textFieldExpression>
 				</textField>
+				<line>
+					<reportElement uuid="5f3c49e7-27f9-4c4a-919c-3ba373cf8510" x="0" y="86" width="555" height="1"/>
+				</line>
 			</band>
 		</groupFooter>
 	</group>
@@ -144,10 +157,10 @@ order by side]]>
 					<textElement textAlignment="Right" verticalAlignment="Middle">
 						<font size="8" isUnderline="false"/>
 					</textElement>
-					<textFieldExpression><![CDATA[(new DecimalFormat("###,###,##0.00")).format($F{net})]]></textFieldExpression>
+					<textFieldExpression><![CDATA[(new DecimalFormat("###,###,##0.00")).format($F{total_gross})]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement uuid="7a1bc7c7-839e-4cde-9a5e-2560338cd2c8" x="317" y="13" width="51" height="12"/>
+					<reportElement uuid="7a1bc7c7-839e-4cde-9a5e-2560338cd2c8" x="319" y="13" width="51" height="12"/>
 					<textElement textAlignment="Right" verticalAlignment="Middle">
 						<font size="8" isUnderline="false"/>
 					</textElement>
@@ -161,11 +174,11 @@ order by side]]>
 					<textFieldExpression><![CDATA[(new DecimalFormat("###,###,##0.00")).format($V{total_vat})]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement uuid="fd4fe073-7d48-455f-bf88-982dedae88cb" x="466" y="13" width="73" height="12"/>
+					<reportElement uuid="fd4fe073-7d48-455f-bf88-982dedae88cb" x="465" y="13" width="73" height="12"/>
 					<textElement textAlignment="Right" verticalAlignment="Middle">
 						<font size="8" isUnderline="false"/>
 					</textElement>
-					<textFieldExpression><![CDATA[(new DecimalFormat("###,###,##0.00")).format($V{SUM_AMOUNT_DUE})]]></textFieldExpression>
+					<textFieldExpression><![CDATA[(new DecimalFormat("###,###,##0.00")).format($F{total_amount_due})]]></textFieldExpression>
 				</textField>
 				<line>
 					<reportElement uuid="b8826f1c-ecbb-4755-9138-760bc1ee0b03" x="258" y="24" width="50" height="1"/>
@@ -328,7 +341,7 @@ order by side]]>
 	<columnHeader>
 		<band height="22">
 			<staticText>
-				<reportElement uuid="767cf0a9-1a22-4c2c-b605-7cd522dbe63b" x="243" y="-1" width="74" height="23"/>
+				<reportElement uuid="767cf0a9-1a22-4c2c-b605-7cd522dbe63b" x="258" y="-1" width="59" height="23"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
@@ -362,7 +375,7 @@ order by side]]>
 				<reportElement uuid="d8366c4e-d3dc-435f-aab4-8368e23c0cab" x="0" y="-2" width="555" height="1"/>
 			</line>
 			<staticText>
-				<reportElement uuid="5e281a81-b3e3-4429-9211-581edf24bef5" x="383" y="-1" width="83" height="22"/>
+				<reportElement uuid="5e281a81-b3e3-4429-9211-581edf24bef5" x="405" y="-1" width="61" height="22"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>

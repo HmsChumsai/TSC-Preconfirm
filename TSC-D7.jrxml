@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="TSC-D7" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="91637d31-8a9d-46aa-9a63-b8b1c4353b9e">
 	<property name="ireport.zoom" value="2.0"/>
-	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="0"/>
+	<property name="ireport.x" value="103"/>
+	<property name="ireport.y" value="156"/>
 	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA["D:\\George\\ireport\\TSC-D1\\"]]></defaultValueExpression>
 	</parameter>
@@ -14,6 +14,7 @@
 	<field name="account_type" class="java.lang.Object"/>
 	<field name="trader_name" class="java.lang.Object"/>
 	<field name="buy_limit" class="java.lang.Object"/>
+	<field name="client_type" class="java.lang.Object"/>
 	<field name="credit_limit" class="java.lang.Object"/>
 	<field name="credit_type" class="java.lang.Object"/>
 	<background>
@@ -117,7 +118,7 @@
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="false"/>
 				</textElement>
-				<textFieldExpression><![CDATA[new SimpleDateFormat("MM/dd/yyyy HH:mm:ss").format(new java.util.Date())]]></textFieldExpression>
+				<textFieldExpression><![CDATA[new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(new java.util.Date())]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement uuid="0ceb36e7-adb5-4214-ae35-ed965ca321c2" x="84" y="103" width="100" height="11"/>
@@ -134,32 +135,11 @@
 				<textFieldExpression><![CDATA[$F{account_no}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement uuid="b77a5058-4d09-410e-9c25-1d834b9e44d2" x="84" y="125" width="100" height="11"/>
-				<textElement markup="none">
-					<font size="8"/>
-				</textElement>
-				<text><![CDATA[777,086.56]]></text>
-			</staticText>
-			<staticText>
-				<reportElement uuid="9198f523-a6b3-40cf-a183-cecd2dfcaf65" x="84" y="136" width="100" height="11"/>
-				<textElement markup="none">
-					<font size="8"/>
-				</textElement>
-				<text><![CDATA[C]]></text>
-			</staticText>
-			<staticText>
 				<reportElement uuid="90a1ddc8-b23a-444e-9fdd-9fe16e617358" x="268" y="125" width="100" height="11"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<text><![CDATA[0.00]]></text>
-			</staticText>
-			<staticText>
-				<reportElement uuid="946a5757-5c9b-4e2c-8406-6463fc5675f8" x="268" y="136" width="100" height="11"/>
-				<textElement>
-					<font size="8"/>
-				</textElement>
-				<text><![CDATA[C]]></text>
 			</staticText>
 			<staticText>
 				<reportElement uuid="0dde5322-ae13-4e9b-b6b2-92e127c1d9cb" x="368" y="114" width="84" height="11"/>
@@ -199,7 +179,7 @@
 			<textField>
 				<reportElement uuid="7d4b458a-d514-4ee8-ba34-13efd7642cc6" x="268" y="114" width="100" height="11"/>
 				<textElement verticalAlignment="Middle">
-					<font size="8"/>
+					<font fontName="Arial Unicode MS" size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{trader_name}]]></textFieldExpression>
 			</textField>
@@ -208,7 +188,28 @@
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{credit_limit}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[" "+(new DecimalFormat("###,###,##0.00")).format($F{credit_limit})]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="166af1c8-2d6a-42b3-aac3-b70acba8c058" x="84" y="136" width="100" height="11"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{account_type}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="683ec5ca-3a8f-4127-a548-428d6f66ee87" x="84" y="125" width="100" height="11"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[" "+(new DecimalFormat("###,###,##0.00")).format($F{buy_limit})]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="900fd296-f284-42bf-b0bc-188d3fb1689c" x="268" y="136" width="100" height="11"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{client_type}]]></textFieldExpression>
 			</textField>
 		</band>
 	</pageHeader>
@@ -221,16 +222,16 @@
 			</subreport>
 		</band>
 	</detail>
-	<lastPageFooter>
-		<band height="128">
+	<pageFooter>
+		<band height="191">
 			<staticText>
-				<reportElement uuid="715e2d58-a698-414a-a906-f7bd38b01641" x="0" y="1" width="279" height="125"/>
+				<reportElement uuid="715e2d58-a698-414a-a906-f7bd38b01641" x="2" y="19" width="279" height="125"/>
 				<textElement markup="none">
 					<font fontName="Arial Unicode MS" size="8"/>
 				</textElement>
 				<text><![CDATA[การให้คำแนะนำ (Recommendation)
-[] ไม่มีการให้คำแนะนำ (No recommendation)
-[] มีการให้คำแนะนำ ดังนี้ (Proposed recommendations)
+[  ] ไม่มีการให้คำแนะนำ (No recommendation)
+[  ] มีการให้คำแนะนำ ดังนี้ (Proposed recommendations)
 ___________________________________________________
 ___________________________________________________
 ___________________________________________________
@@ -241,7 +242,7 @@ ___________________________________________________
                                                           Account Officer]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="ab751036-8505-4068-a357-183a462d306a" x="279" y="2" width="274" height="124"/>
+				<reportElement uuid="ab751036-8505-4068-a357-183a462d306a" x="281" y="20" width="274" height="124"/>
 				<textElement markup="none">
 					<font fontName="Arial Unicode MS" size="8"/>
 				</textElement>
@@ -251,15 +252,15 @@ ___________________________________________________
 เป็นผู้ตัดสินใจเองทุกประการ"
 "I hereby cetify that the above transaction(s) have been carried out
 by my instruction(s) and that I have determined the above mentioned
-instruction(s) at my own discretion"
+instruction(s) at my own discretion."
 
 ลงชื่อ (Authorized)___________________________________
                                                         ลูกค้า / ผู้รับมอบอำนาจ
                                            Client / Nominated Power of Attorney]]></text>
 			</staticText>
 			<line>
-				<reportElement uuid="5b2b56a1-c383-4b92-b166-3b7c776d2450" x="0" y="0" width="551" height="1"/>
+				<reportElement uuid="5b2b56a1-c383-4b92-b166-3b7c776d2450" x="2" y="5" width="551" height="1"/>
 			</line>
 		</band>
-	</lastPageFooter>
+	</pageFooter>
 </jasperReport>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="TSC-D6_subreport1" pageWidth="555" pageHeight="802" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="0922cf29-3790-4e74-8e67-619396ffe695">
-	<property name="ireport.zoom" value="3.0"/>
-	<property name="ireport.x" value="493"/>
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<property name="ireport.callouts" value="##Wed Mar 19 16:44:18 CST 2014"/>
 	<queryString>
@@ -18,6 +18,8 @@ order by side,stock,price]]>
 	<field name="vat" class="java.lang.Object"/>
 	<field name="amount_due" class="java.lang.Object"/>
 	<field name="comm" class="java.lang.Object"/>
+	<field name="total_amount_due" class="java.lang.Object"/>
+	<field name="total_gross" class="java.lang.Object"/>
 	<field name="net" class="java.lang.Object"/>
 	<field name="paid_received" class="java.lang.Object"/>
 	<variable name="SUM_amt" class="java.lang.Double" resetType="Group" resetGroup="side" calculation="Sum">
@@ -71,7 +73,7 @@ order by side,stock,price]]>
 	<group name="total">
 		<groupExpression><![CDATA[]]></groupExpression>
 		<groupFooter>
-			<band height="107">
+			<band height="108">
 				<staticText>
 					<reportElement uuid="c9fbbee7-e048-450a-a25a-7a4ee051c6d5" x="217" y="24" width="100" height="12"/>
 					<textElement textAlignment="Right" verticalAlignment="Middle">
@@ -140,7 +142,7 @@ order by side,stock,price]]>
 					<textElement textAlignment="Right" verticalAlignment="Middle">
 						<font size="8"/>
 					</textElement>
-					<textFieldExpression><![CDATA[$F{net}]]></textFieldExpression>
+					<textFieldExpression><![CDATA[(new DecimalFormat("###,###,##0.00")).format($F{net})]]></textFieldExpression>
 				</textField>
 				<textField>
 					<reportElement uuid="c745b315-1da8-4efc-bf57-b78e7e3f3948" x="383" y="72" width="83" height="12"/>
@@ -158,9 +160,9 @@ order by side,stock,price]]>
 	<group name="side">
 		<groupExpression><![CDATA[$F{side}]]></groupExpression>
 		<groupHeader>
-			<band height="12">
+			<band height="11">
 				<staticText>
-					<reportElement uuid="ee365d9e-5da3-4a06-80ea-08c64fef4e06" x="0" y="0" width="52" height="11"/>
+					<reportElement uuid="ee365d9e-5da3-4a06-80ea-08c64fef4e06" x="2" y="0" width="38" height="11"/>
 					<textElement>
 						<font size="8" isBold="true"/>
 					</textElement>
@@ -185,11 +187,11 @@ order by side,stock,price]]>
 					<textFieldExpression><![CDATA[$F{side}]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement uuid="0e83aa8f-0ec7-4024-b161-2d0c22160af2" x="243" y="3" width="65" height="23"/>
+					<reportElement uuid="0e83aa8f-0ec7-4024-b161-2d0c22160af2" x="243" y="3" width="55" height="23"/>
 					<textElement textAlignment="Right" verticalAlignment="Middle">
 						<font size="8" isUnderline="false"/>
 					</textElement>
-					<textFieldExpression><![CDATA[(new DecimalFormat("###,###,##0.00")).format($V{SUM_amt})]]></textFieldExpression>
+					<textFieldExpression><![CDATA[(new DecimalFormat("###,###,##0.00")).format($F{total_gross})]]></textFieldExpression>
 				</textField>
 				<textField>
 					<reportElement uuid="88381f2b-9b03-4572-9a30-ea950dc789ed" x="317" y="3" width="51" height="23"/>
@@ -199,18 +201,18 @@ order by side,stock,price]]>
 					<textFieldExpression><![CDATA[(new DecimalFormat("###,###,##0.00")).format($V{SUM_comm_fee})]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement uuid="dc32a2e4-567d-4a92-a138-9b6a33074f68" x="394" y="3" width="61" height="23"/>
+					<reportElement uuid="dc32a2e4-567d-4a92-a138-9b6a33074f68" x="382" y="3" width="51" height="23"/>
 					<textElement textAlignment="Right" verticalAlignment="Middle">
 						<font size="8" isUnderline="false"/>
 					</textElement>
 					<textFieldExpression><![CDATA[(new DecimalFormat("###,###,##0.00")).format($V{SUM_vat})]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement uuid="de5e43dc-8ad7-4f4c-87c4-1285c3abbb8f" x="466" y="6" width="73" height="23"/>
+					<reportElement uuid="de5e43dc-8ad7-4f4c-87c4-1285c3abbb8f" x="466" y="3" width="73" height="23"/>
 					<textElement textAlignment="Right" verticalAlignment="Middle">
 						<font size="8" isUnderline="false"/>
 					</textElement>
-					<textFieldExpression><![CDATA[(new DecimalFormat("###,###,##0.00")).format($V{SUM_amount_due})]]></textFieldExpression>
+					<textFieldExpression><![CDATA[(new DecimalFormat("###,###,##0.00")).format($F{total_amount_due})]]></textFieldExpression>
 				</textField>
 				<line>
 					<reportElement uuid="f16a9a31-a780-4cb3-a00a-a142d0510f58" x="0" y="29" width="555" height="1"/>
@@ -224,117 +226,117 @@ order by side,stock,price]]>
 	<group name="stock">
 		<groupExpression><![CDATA[$F{stock}]]></groupExpression>
 		<groupFooter>
-			<band height="30">
+			<band height="22">
 				<textField>
-					<reportElement uuid="061782db-de93-44f8-bf5b-df9cf463d5d5" x="172" y="0" width="52" height="20"/>
+					<reportElement uuid="061782db-de93-44f8-bf5b-df9cf463d5d5" x="172" y="0" width="52" height="11"/>
 					<textElement textAlignment="Right">
 						<font size="8"/>
 					</textElement>
-					<textFieldExpression><![CDATA[$V{SUM_SIDE_STOCK_PRICE}]]></textFieldExpression>
+					<textFieldExpression><![CDATA[(new DecimalFormat("###,###,##0.0000")).format($V{SUM_SIDE_STOCK_PRICE})]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement uuid="797dc01c-5934-43f0-9d9d-51a79c709875" x="243" y="0" width="65" height="20"/>
+					<reportElement uuid="797dc01c-5934-43f0-9d9d-51a79c709875" x="243" y="0" width="55" height="11"/>
 					<textElement textAlignment="Right">
 						<font size="8"/>
 					</textElement>
-					<textFieldExpression><![CDATA[$V{SUM_SIDE_STOCK_GROSS}]]></textFieldExpression>
+					<textFieldExpression><![CDATA[(new DecimalFormat("###,###,##0.00")).format($V{SUM_SIDE_STOCK_GROSS})]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement uuid="7a79ac47-87c5-4aef-9564-753c24e1e23a" x="317" y="0" width="51" height="20"/>
+					<reportElement uuid="7a79ac47-87c5-4aef-9564-753c24e1e23a" x="320" y="0" width="48" height="11"/>
 					<textElement textAlignment="Right">
 						<font size="8"/>
 					</textElement>
-					<textFieldExpression><![CDATA[$F{comm_fee}]]></textFieldExpression>
+					<textFieldExpression><![CDATA[(new DecimalFormat("###,###,##0.00")).format($F{comm_fee})]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement uuid="12545994-a339-4f8a-bcf9-aa530c3851e8" x="383" y="0" width="62" height="20"/>
+					<reportElement uuid="12545994-a339-4f8a-bcf9-aa530c3851e8" x="371" y="0" width="62" height="11"/>
 					<textElement textAlignment="Right">
 						<font size="8"/>
 					</textElement>
-					<textFieldExpression><![CDATA[$F{vat}]]></textFieldExpression>
+					<textFieldExpression><![CDATA[(new DecimalFormat("###,###,##0.00")).format($F{vat})]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement uuid="2b29c465-5ca5-411c-8c42-aeda485cbabf" x="466" y="0" width="73" height="20"/>
+					<reportElement uuid="2b29c465-5ca5-411c-8c42-aeda485cbabf" x="466" y="0" width="73" height="11"/>
 					<textElement textAlignment="Right">
 						<font size="8"/>
 					</textElement>
-					<textFieldExpression><![CDATA[$F{amount_due}]]></textFieldExpression>
+					<textFieldExpression><![CDATA[(new DecimalFormat("###,###,##0.00")).format($F{amount_due})]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement uuid="958b2999-c9bd-4587-bf35-17b36ab60b65" x="125" y="0" width="37" height="20"/>
+					<reportElement uuid="958b2999-c9bd-4587-bf35-17b36ab60b65" x="127" y="0" width="35" height="11"/>
 					<textElement textAlignment="Right">
 						<font size="8"/>
 					</textElement>
-					<textFieldExpression><![CDATA[$V{SUM_SIDE_STOCK_VOL}]]></textFieldExpression>
+					<textFieldExpression><![CDATA[(new DecimalFormat("###,###,##0")).format($V{SUM_SIDE_STOCK_VOL})]]></textFieldExpression>
 				</textField>
 				<line>
-					<reportElement uuid="6edca791-5182-4ab8-9aa0-f698a9198ee7" x="127" y="20" width="35" height="1"/>
+					<reportElement uuid="6edca791-5182-4ab8-9aa0-f698a9198ee7" x="127" y="11" width="35" height="1"/>
 					<graphicElement>
 						<pen lineWidth="0.5" lineStyle="Dashed"/>
 					</graphicElement>
 				</line>
 				<line>
-					<reportElement uuid="7c4d0537-1cfb-46c9-aed1-16d80ea1b458" x="127" y="23" width="35" height="1"/>
+					<reportElement uuid="7c4d0537-1cfb-46c9-aed1-16d80ea1b458" x="127" y="12" width="35" height="1"/>
 					<graphicElement>
 						<pen lineWidth="0.5" lineStyle="Dashed"/>
 					</graphicElement>
 				</line>
 				<line>
-					<reportElement uuid="eb2bb7b1-00cb-42d6-8a27-088a267f650e" x="172" y="20" width="52" height="1"/>
+					<reportElement uuid="eb2bb7b1-00cb-42d6-8a27-088a267f650e" x="172" y="11" width="52" height="1"/>
 					<graphicElement>
 						<pen lineWidth="0.5" lineStyle="Dashed"/>
 					</graphicElement>
 				</line>
 				<line>
-					<reportElement uuid="9d45e2e8-6a14-4b09-a67e-ce66d7e18107" x="172" y="23" width="52" height="1"/>
+					<reportElement uuid="9d45e2e8-6a14-4b09-a67e-ce66d7e18107" x="172" y="12" width="52" height="1"/>
 					<graphicElement>
 						<pen lineWidth="0.5" lineStyle="Dashed"/>
 					</graphicElement>
 				</line>
 				<line>
-					<reportElement uuid="7e40a5b4-9fcf-47c2-b89d-26789f15c071" x="253" y="20" width="55" height="1"/>
+					<reportElement uuid="7e40a5b4-9fcf-47c2-b89d-26789f15c071" x="253" y="11" width="45" height="1"/>
 					<graphicElement>
 						<pen lineWidth="0.5" lineStyle="Dashed"/>
 					</graphicElement>
 				</line>
 				<line>
-					<reportElement uuid="810602d8-c488-41e8-8840-ff023e0c0687" x="253" y="23" width="55" height="1"/>
+					<reportElement uuid="810602d8-c488-41e8-8840-ff023e0c0687" x="253" y="12" width="45" height="1"/>
 					<graphicElement>
 						<pen lineWidth="0.5" lineStyle="Dashed"/>
 					</graphicElement>
 				</line>
 				<line>
-					<reportElement uuid="28f9ed5a-78e9-41a6-8289-41004cbcea3e" x="317" y="20" width="51" height="1"/>
+					<reportElement uuid="28f9ed5a-78e9-41a6-8289-41004cbcea3e" x="317" y="11" width="51" height="1"/>
 					<graphicElement>
 						<pen lineWidth="0.5" lineStyle="Dashed"/>
 					</graphicElement>
 				</line>
 				<line>
-					<reportElement uuid="2bd02be3-762f-4eaa-a735-04da6e9168d2" x="317" y="23" width="51" height="1"/>
+					<reportElement uuid="2bd02be3-762f-4eaa-a735-04da6e9168d2" x="317" y="12" width="51" height="1"/>
 					<graphicElement>
 						<pen lineWidth="0.5" lineStyle="Dashed"/>
 					</graphicElement>
 				</line>
 				<line>
-					<reportElement uuid="5d9acec2-d620-4535-9149-90ffdf1d0ee8" x="383" y="20" width="62" height="1"/>
+					<reportElement uuid="5d9acec2-d620-4535-9149-90ffdf1d0ee8" x="382" y="11" width="51" height="1"/>
 					<graphicElement>
 						<pen lineWidth="0.5" lineStyle="Dashed"/>
 					</graphicElement>
 				</line>
 				<line>
-					<reportElement uuid="343da694-bebe-4b5f-aea6-c8d738045423" x="383" y="23" width="62" height="1"/>
+					<reportElement uuid="343da694-bebe-4b5f-aea6-c8d738045423" x="382" y="12" width="51" height="1"/>
 					<graphicElement>
 						<pen lineWidth="0.5" lineStyle="Dashed"/>
 					</graphicElement>
 				</line>
 				<line>
-					<reportElement uuid="7e0410f9-1ed5-4727-90cb-51c31c9d3de9" x="466" y="20" width="73" height="1"/>
+					<reportElement uuid="7e0410f9-1ed5-4727-90cb-51c31c9d3de9" x="466" y="11" width="73" height="1"/>
 					<graphicElement>
 						<pen lineWidth="0.5" lineStyle="Dashed"/>
 					</graphicElement>
 				</line>
 				<line>
-					<reportElement uuid="f4974e59-8df6-4906-a4fa-60898407400d" x="466" y="23" width="73" height="1"/>
+					<reportElement uuid="f4974e59-8df6-4906-a4fa-60898407400d" x="466" y="12" width="73" height="1"/>
 					<graphicElement>
 						<pen lineWidth="0.5" lineStyle="Dashed"/>
 					</graphicElement>
@@ -355,15 +357,15 @@ order by side,stock,price]]>
 				<text><![CDATA[Gross AMT]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="4673a97d-e2be-4f1b-a431-47697040f953" x="52" y="0" width="73" height="22"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
+				<reportElement uuid="4673a97d-e2be-4f1b-a431-47697040f953" x="40" y="0" width="71" height="22"/>
+				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
 				<text><![CDATA[STOCK]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="12ed0061-98b8-4a68-bf93-5605a26913c7" x="0" y="-2" width="52" height="23"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
+				<reportElement uuid="12ed0061-98b8-4a68-bf93-5605a26913c7" x="2" y="-2" width="38" height="23"/>
+				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
 				<text><![CDATA[NO.]]></text>
@@ -412,7 +414,7 @@ order by side,stock,price]]>
 		</band>
 	</columnHeader>
 	<detail>
-		<band height="17" splitType="Stretch">
+		<band height="14" splitType="Stretch">
 			<textField>
 				<reportElement uuid="f5d907b8-f0ec-4210-ad3e-f8cf99a1c864" x="466" y="0" width="73" height="11"/>
 				<textElement textAlignment="Right">
@@ -439,24 +441,17 @@ order by side,stock,price]]>
 				<textElement textAlignment="Right">
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{vol}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[(new DecimalFormat("###,###,##0")).format($F{vol})]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement uuid="8f26a3ee-28bb-4f93-bf9b-0660b644d388" x="52" y="0" width="73" height="11"/>
-				<textElement textAlignment="Center">
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{stock}]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement uuid="7fbb5294-ee64-48b3-b30a-b2c23a52d9f9" x="243" y="0" width="65" height="11"/>
+				<reportElement uuid="7fbb5294-ee64-48b3-b30a-b2c23a52d9f9" x="243" y="0" width="55" height="11"/>
 				<textElement textAlignment="Right">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[(new DecimalFormat("###,###,##0.00")).format($F{gross_amt})]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement uuid="edfafcec-0305-41ba-bfd7-43f508609837" x="383" y="0" width="61" height="11"/>
+				<reportElement uuid="edfafcec-0305-41ba-bfd7-43f508609837" x="368" y="0" width="65" height="11"/>
 				<textElement textAlignment="Right">
 					<font size="8"/>
 				</textElement>
@@ -469,7 +464,7 @@ order by side,stock,price]]>
 				</graphicElement>
 			</line>
 			<line>
-				<reportElement uuid="88fdbad5-1917-44c7-8ac3-9d8082d6b489" x="383" y="12" width="62" height="1"/>
+				<reportElement uuid="88fdbad5-1917-44c7-8ac3-9d8082d6b489" x="382" y="13" width="51" height="1"/>
 				<graphicElement>
 					<pen lineWidth="0.5" lineStyle="Dashed"/>
 				</graphicElement>
@@ -481,7 +476,7 @@ order by side,stock,price]]>
 				</graphicElement>
 			</line>
 			<line>
-				<reportElement uuid="03d60159-d6ad-4c6e-b829-fbd92c5f0d31" x="253" y="12" width="55" height="1"/>
+				<reportElement uuid="03d60159-d6ad-4c6e-b829-fbd92c5f0d31" x="253" y="12" width="45" height="1"/>
 				<graphicElement>
 					<pen lineWidth="0.5" lineStyle="Dashed"/>
 				</graphicElement>
@@ -493,8 +488,8 @@ order by side,stock,price]]>
 				</graphicElement>
 			</line>
 			<textField>
-				<reportElement uuid="c959c39b-d721-41e7-a200-acfe55d80a49" x="0" y="0" width="52" height="11"/>
-				<textElement textAlignment="Center">
+				<reportElement uuid="c959c39b-d721-41e7-a200-acfe55d80a49" x="2" y="0" width="38" height="11"/>
+				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$V{REPORT_COUNT}]]></textFieldExpression>
@@ -505,6 +500,13 @@ order by side,stock,price]]>
 					<pen lineWidth="0.5" lineStyle="Dashed"/>
 				</graphicElement>
 			</line>
+			<textField>
+				<reportElement uuid="8f26a3ee-28bb-4f93-bf9b-0660b644d388" x="40" y="0" width="73" height="11"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{stock}]]></textFieldExpression>
+			</textField>
 		</band>
 	</detail>
 </jasperReport>

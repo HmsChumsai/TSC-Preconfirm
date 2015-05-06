@@ -5,7 +5,9 @@ function TSCReportUtil.getOrderList(orders,isBillOrder)
 	local orderList= {}
 	local totalList={}
 	local totalItem={}
-  local net=0
+  local net=0.00
+	local total_gross = 0.00
+	local total_amount_due = 0.00
 	for _,no in pairs(orders) do 
 		local order = fo.Order( no )
     local orderHandlingType = order:getHandlingType()
@@ -50,19 +52,25 @@ function TSCReportUtil.getOrderList(orders,isBillOrder)
             price = easygetter.EvenAmountToDouble(price)
             vol = execQty
           end
+					local comm_vat = getFee(order,orderleg)
 
-          local comm_fee  = getFee(order,orderleg)
-          local vat=0.07*comm_fee
+          local comm_fee = comm_vat/(1.07)
+          local vat=comm_vat-comm_fee
           local gross_amt=vol*price
           local amount_due=0.0
 
           if (buy_sell=='Buy') then
             amount_due=gross_amt+comm_fee+vat
+						total_gross=total_gross-gross_amt
+						total_amount_due = total_amount_due-(gross_amt+comm_vat)
             net = net-amount_due
           else
-            amount_due=gross_amt-comm_fee-vat
+            amount_due=gross_amt+(comm_fee+vat)
+						total_amount_due = total_amount_due+(gross_amt-comm_vat)
+						total_gross=total_gross+gross_amt
             net = net + amount_due
           end
+					table.insert (orderItem,{'order_no',no})
           table.insert (orderItem,{'stock',symbol})
           table.insert (orderItem,{'side',buy_sell})
           table.insert (orderItem,{'vol',vol})
@@ -77,22 +85,34 @@ function TSCReportUtil.getOrderList(orders,isBillOrder)
     end
   end
   if (net<0) then
-    paid_received = "Paid " 
+    paid_received = "Paid "
+
   else
     paid_received = "Received " 
   end
   table.insert(totalItem,{'net',net})
   table.insert(totalItem,{'paid_received',paid_received})
-  --table.insert(totalItem,{'comm',total_comm_fee})
-  --table.insert(totalItem,{'vat',vat})
-	--table.insert(totalList,{'total_comm_fee',total_comm_fee})
-	--table.insert(totalList,{'total_vat',total_vat})
+	table.insert(totalItem,{'total_gross',total_gross})
+	table.insert(totalItem,{'total_amount_due',total_amount_due})
 	table.insert(totalList,totalItem)
-	--print('totalList : ',dump(totalList))
 	print('----------- End getOrderList--------')
 	return orderList,totalList
 end
 
+function getFee(order, orderLeg, ut)
+	print(" Get Fee in TSCReportUtils")
+  local fee = 0
+	for _, execution in ipairs(order:getEffectiveExecutions(ut)) do
+    local leg = execution:getOrderLeg(ut)
+    if leg:getOrder() == order and leg:getLegIndex() == orderLeg:getLegIndex() then
+      local data = execution:getData(ut)
+			print("data.amountp : ",data.amountp:asDouble())
+			print("data.netAmountP : ",data.netAmountP:asDouble())
+      fee = fee + math.abs(data.amountp:asDouble() - data.netAmountP:asDouble())
+		end
+  end
+  return fee
+end
 local hasLimitValue = function(limittype)
   local list = {
     Limit = true,

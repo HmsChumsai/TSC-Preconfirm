@@ -82,7 +82,8 @@ function CreateSchema()
 
 	}},
   {table_name_order,{
-  'side' .. sql_column_text,
+  'order_no' .. sql_column_integer,
+	'side' .. sql_column_text,
   'stock' .. sql_column_text,
   'vol' .. sql_column_integer,
   'price' .. sql_column_real,
@@ -92,8 +93,8 @@ function CreateSchema()
   'amount_due' .. sql_column_real
   }},
   {table_name_total,{'comm' ..sql_column_real,
-  'tr_fee' ..sql_column_real,
-  'ci_fee' ..sql_column_real,
+  'total_amount_due' .. sql_column_real,
+  'total_gross' .. sql_column_real,
   'vat' ..sql_column_real,
   'net' .. sql_column_real,
   'paid_received' .. sql_column_text
@@ -129,17 +130,17 @@ function getDeposit(depositId)
 	return depositList
 end
 
-function getFee(order, orderLeg, ut)
-  local fee = 0
-	for _, execution in ipairs(order:getEffectiveExecutions(ut)) do
-    local leg = execution:getOrderLeg(ut)
-    if leg:getOrder() == order and leg:getLegIndex() == orderLeg:getLegIndex() then
-      local data = execution:getData(ut)
-      fee = fee + math.abs(data.amountp:asDouble() - data.netAmountP:asDouble())
-		end
-  end
-  return fee
-end
+--function getFee(order, orderLeg, ut)
+--  local fee = 0
+--	for _, execution in ipairs(order:getEffectiveExecutions(ut)) do
+--    local leg = execution:getOrderLeg(ut)
+--    if leg:getOrder() == order and leg:getLegIndex() == orderLeg:getLegIndex() then
+--      local data = execution:getData(ut)
+--      fee = fee + math.abs(data.amountp:asDouble() - data.netAmountP:asDouble())
+--		end
+--  end
+--  return fee
+--end
 
 function dump(o)
   if type(o) == 'table' then

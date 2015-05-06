@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="TSC-D5" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="91637d31-8a9d-46aa-9a63-b8b1c4353b9e">
-	<property name="ireport.zoom" value="1.5"/>
-	<property name="ireport.x" value="0"/>
+	<property name="ireport.zoom" value="3.0"/>
+	<property name="ireport.x" value="555"/>
 	<property name="ireport.y" value="0"/>
 	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA["D:\\George\\ireport\\TSC-D1\\"]]></defaultValueExpression>
@@ -68,32 +68,32 @@
 				<textFieldExpression><![CDATA[$F{account_name}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement uuid="d81b3ae5-3750-4798-9032-520a1d442cd7" x="310" y="92" width="100" height="11"/>
+				<reportElement uuid="d81b3ae5-3750-4798-9032-520a1d442cd7" x="298" y="92" width="128" height="11"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{account_no}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement uuid="827ca033-9699-41ce-80d8-23167890ad87" x="310" y="103" width="100" height="11"/>
+				<reportElement uuid="827ca033-9699-41ce-80d8-23167890ad87" x="298" y="103" width="128" height="11"/>
 				<textElement>
 					<font fontName="Arial Unicode MS" size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{trader_name}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement uuid="7ba86f1d-ebf7-4318-be73-1991422a64dd" x="210" y="92" width="100" height="11"/>
+				<reportElement uuid="7ba86f1d-ebf7-4318-be73-1991422a64dd" x="210" y="92" width="88" height="11"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<text><![CDATA[ACCOUNT NO 	:]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="11e878ef-4650-4599-a11b-c094b30ca05e" x="210" y="103" width="100" height="11"/>
+				<reportElement uuid="11e878ef-4650-4599-a11b-c094b30ca05e" x="210" y="103" width="88" height="11"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
-				<text><![CDATA[OFFICER NAME 	:]]></text>
+				<text><![CDATA[OFFICER NAME	:]]></text>
 			</staticText>
 			<staticText>
 				<reportElement uuid="53cd96ee-95e8-474b-921f-3fa1d12daf38" x="54" y="114" width="146" height="11"/>
