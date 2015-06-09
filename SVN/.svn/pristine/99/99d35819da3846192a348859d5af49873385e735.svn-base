@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="TSC-D7_subreport1_subreport4" language="groovy" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="c43afeed-4e42-4499-a85f-4ecfdf459cb5">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="ORDER_ID" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[select *
+from decide_deal
+where order_no=$P{ORDER_ID}]]>
+	</queryString>
+	<field name="order_no" class="java.lang.Object"/>
+	<field name="deal_seq" class="java.lang.Object"/>
+	<field name="deal_price" class="java.lang.Object"/>
+	<field name="deal_qty" class="java.lang.Object"/>
+	<detail>
+		<band height="212" splitType="Stretch">
+			<textField>
+				<reportElement uuid="94edab55-22c8-4134-b8db-da9a583a8d28" x="0" y="0" width="138" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[""+$F{order_no}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="7c73396d-82bc-45e7-a4f5-bb6a654e50bf" x="138" y="0" width="138" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[""+$F{deal_seq}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="c5f817b0-079a-428c-83b1-1055e9e46612" x="276" y="0" width="138" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[""+$F{deal_price}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="550e350a-8dc0-48ce-b4f3-f1358a63f400" x="414" y="0" width="138" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[""+$F{deal_qty}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

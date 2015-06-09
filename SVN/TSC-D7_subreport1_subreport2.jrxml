@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="TSC-D7_subreport1_subreport2" language="groovy" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="7caf7a07-9201-4408-b033-235b1f883e83">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<queryString language="SQL">
+		<![CDATA[select * from decide_order,decide_deal
+where decide_deal.order_no = decide_order.order_no
+order by order_no]]>
+	</queryString>
+	<field name="order_no" class="java.lang.Object"/>
+	<field name="side" class="java.lang.Object"/>
+	<field name="stock" class="java.lang.Object"/>
+	<field name="vol" class="java.lang.Object"/>
+	<field name="price" class="java.lang.Object"/>
+	<field name="matched" class="java.lang.Object"/>
+	<field name="st" class="java.lang.Object"/>
+	<field name="time" class="java.lang.Object"/>
+	<field name="tran_time" class="java.lang.Object"/>
+	<field name="entry" class="java.lang.Object"/>
+	<field name="publish" class="java.lang.Object"/>
+	<field name="condition" class="java.lang.Object"/>
+	<field name="gross_amt" class="java.lang.Object"/>
+	<field name="comm_fee" class="java.lang.Object"/>
+	<field name="vat" class="java.lang.Object"/>
+	<field name="amount_due" class="java.lang.Object"/>
+	<field name="deal_seq" class="java.lang.Object"/>
+	<field name="deal_price" class="java.lang.Object"/>
+	<field name="deal_qty" class="java.lang.Object"/>
+	<detail>
+		<band height="50">
+			<textField>
+				<reportElement uuid="aed70ece-88a0-4854-bf5d-25bd878e31fd" x="409" y="24" width="77" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{deal_price}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="d9809342-325d-4ce1-bab6-166046e3e985" x="309" y="24" width="100" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{deal_qty}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>
