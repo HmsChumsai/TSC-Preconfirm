@@ -1,0 +1,693 @@
+-- Last Modified Date: 20140608-00
+require "ocs"
+
+local cmdln = require "cmdline"
+local fo = require "fo"
+local tim = require "tim"
+local maps = require "maps"
+
+local depositId = ""
+local entryFrom = ""
+local entryTo = ""
+local log_file = ""
+local db_file = ""
+local format = "PDF"
+
+cmdln.add{ name="--logFile", descr="", func=function(x) log_file=x end }
+cmdln.add{ name="--dbFile", descr="", func=function(x) db_file=x end }
+cmdln.add{ name="--depositid", descr="", func=function(x) depositId=x end }
+--cmdln.add{ name="--format", descr="", func=function(x) format=x end }
+cmdln.add{ name="--from", descr="", func=function(x) entryFrom=x end }
+cmdln.add{ name="--to", descr="",  func=function(x) entryTo=x end }
+
+cmdln.parse( arg, true )
+print("depositId: " .. depositId)
+print("entryFrom: " .. entryFrom)
+print("entryTo: " .. entryTo)
+print("log_file: " .. log_file)
+print("log_file: " .. log_file)
+print("db_file: " .. db_file)
+print("format: " .. format)
+
+ocs.createInstance( "LUA" )
+local dubi = require "dubi"	
+--self defined common module
+local common = require "common"
+local confirmreport = require "confirmreport"
+local easygetter = require "easygetter"
+
+common.CheckValidTimeRange(entryFrom, entryTo)
+
+
+local CallForceMapping = {["Call"]="Call", ["Force"]="Force", ["None"]=""}
+local debug_mode = false
+
+local sql_column_text = ' TEXT DEFAULT "" '
+local sql_column_integer = ' INTEGER DEFAULT 0'
+local sql_column_real = ' REAL DEFAULT 0.0'
+local table_name_deposit = "deposit"
+local table_name_order = "DECIDE_order"
+local table_name_summary = "DECIDE_order_summary"
+local database_tables = {
+	{table_name_deposit, {'client_name'..sql_column_text, 
+						'account_no'..sql_column_text, 
+						'magin_type'..sql_column_text,
+						'account_name'..sql_column_text, 
+						'trader_id'..sql_column_text,
+						'trader_name'..sql_column_text, 
+						'TCH_account'..sql_column_text, 
+						'cust_flag'..sql_column_text, 
+						'cust_type'..sql_column_text, 
+						'account_type'..sql_column_text, 
+						'credit_type'..sql_column_text, 
+						'cannot_over_credit'..sql_column_text, 
+						'cash_checking'..sql_column_text, 
+						'mark_to_market'..sql_column_text, 
+						'auto_net_pos'..sql_column_text, 
+						'margin_method'..sql_column_text,
+						'position_limit'..sql_column_real, 
+						'report_level_F'..sql_column_text, 
+						'report_level_O'..sql_column_text, 
+						'commission'..sql_column_real, 
+						'expected_commission'..sql_column_real,
+						'withholding_tax'..sql_column_real, 
+						'cash_balance_prev'..sql_column_real, 
+						'excess_quity'..sql_column_real,
+						'liquid_lvalue_curr'..sql_column_real,
+						'credit_line'..sql_column_real, 
+						'buy_limit'..sql_column_real, 
+						'equity_balance_pre'..sql_column_real, 
+						'equity_balance_expected'..sql_column_real, 
+						'equity_balance_port'..sql_column_real, 
+						'excess_equity_bal_prev'..sql_column_real, 
+						'excess_quity_bal_expected'..sql_column_real, 
+						'excess_quity_bal_port'..sql_column_real,
+						'unreal_pl_prev'..sql_column_real, 
+						'unreal_pl_expected'..sql_column_real, 
+						'unreal_pl_port'..sql_column_real, 
+						'magin_bal_prev'..sql_column_real,
+						'magin_bal_expected'..sql_column_real, 
+						'magin_bal_port'..sql_column_real, 
+						'call_force_flag_prev'..sql_column_text,
+						'call_force_flag_expected'..sql_column_text, 
+						'call_force_flag_port'..sql_column_text, 
+						'call_force_amount_prev'..sql_column_real,
+						'call_force_amount_expected'..sql_column_real, 
+						'call_force_amount_port'..sql_column_real, 
+						'withdrawal_port'..sql_column_real}},
+						
+	{table_name_order, { 'cdate'..sql_column_text, 
+						'series'..sql_column_text, 
+						'long_short'..sql_column_text, 
+						'pos'..sql_column_text, 
+						'vol'..sql_column_integer, 
+						'price'..sql_column_real, 
+						'total_value'..sql_column_real,
+						'match_vol'..sql_column_integer, 
+						'match_price'..sql_column_real, 
+						'matched_value'..sql_column_real, 
+						'open_vol'..sql_column_integer, 
+						'open_value'..sql_column_real, 
+						'cancel_qty'..sql_column_integer, 
+						'cancel_value'..sql_column_real, 
+						'multiplier'..sql_column_integer, 
+						'cont_size'..sql_column_real, 
+						"comm_vat"..sql_column_real, 
+						"net"..sql_column_real}},
+	{table_name_summary, { 'summary_cdate'..sql_column_text,
+            'summary_pos'..sql_column_text,
+            'summary_series'..sql_column_text,
+            'summary_side'..sql_column_text,
+            'summary_qty'..sql_column_integer,
+            'summary_price'..sql_column_real,
+            'summary_multi'..sql_column_integer,
+            'summary_cont_size'..sql_column_real,
+            "summary_comm_vat"..sql_column_real,
+            "summary_net"..sql_column_real,
+            "summary_total_open_cont_size"..sql_column_real,
+            "summary_total_close_cont_size"..sql_column_real,
+            "summary_total_open_net"..sql_column_real,
+            "summary_total_close_net"..sql_column_real,
+            "summary_total_net_cont_size"..sql_column_real,
+            "summary_total_net_comm_vat"..sql_column_real,
+            "summary_total_net_net"..sql_column_real}}
+}	
+
+common.CreateTables(db_file, log_file,  database_tables, debug_mode)
+
+local DECIDE_deposit_obj = fo.Deposit( tonumber(depositId ) )
+
+local depositList = {}
+local depositItem = {}
+local client_obj = DECIDE_deposit_obj:getClient()
+table.insert (depositItem, {'client_name', client_obj:getName()}) 
+table.insert (depositItem, {'account_no', DECIDE_deposit_obj:getNumber()}) 
+
+if (margCalcSettings ~= nil) then
+	table.insert (depositItem, {'magin_type', margCalcSettings:getName()})
+end
+table.insert (depositItem, {'account_name', DECIDE_deposit_obj:getNumber()})
+
+if( client_obj:hasAccountManager() ) then
+	local account_manager = client_obj:getAccountManager()
+	local trader_id = dubi.getSETTraderId( account_manager:getShortName())
+	if( trader_id ~= nil) then
+		-- ** pending to dev for multiple exchange
+		table.insert (depositItem, {'trader_id', trader_id }) 
+	end
+	table.insert (depositItem, {'trader_name', account_manager:getPerson():getName()}) 
+end
+
+table.insert (depositItem, {'TCH_account', DECIDE_deposit_obj:getDefClearingAccount():getName()})
+
+if(DECIDE_deposit_obj:hasTradingProfile()) then
+	local profile = DECIDE_deposit_obj:getTradingProfile()
+	local profilePreFix = ""
+	if( profile ~= nil) then
+		profilePreFix = string.sub(profile:getName(), 1, 2)
+		if( string.find("F=;O=;A=;N=;G=;E=;X=;", profilePreFix) ~= nil) then
+			table.insert (depositItem, {'cust_flag', string.sub(profilePreFix, 1, 1)})
+		else
+			table.insert (depositItem, {'cust_flag', "Unexpected Value"})
+		end
+	end
+end
+
+table.insert (depositItem, {'cust_type', client_obj:getClientType():getName()})
+
+if (DECIDE_deposit_obj:hasAccountType()) then
+	table.insert (depositItem, {'account_type', DECIDE_deposit_obj:getAccountType():getName() })
+end
+
+
+local clientFeeCategories = DECIDE_deposit_obj:getClient():getClientFeeCategories()
+for _, category in pairs(clientFeeCategories) do
+	local categoryName = category:getName()
+	local whtPos = string.find( categoryName, "WHT" )
+	if ( whtPos ~= nil) then
+		table.insert (depositItem, {'withholding_tax', string.sub(categoryName, whtPos+4, -2) }) 	
+		-- should be only configured one WHT, so if founded, should quit loop
+		break
+	end	
+end
+
+table.insert (depositItem, {'auto_net_pos', common.BoolleanToYesNoMapping[DECIDE_deposit_obj:hasShortLongNetting()] })
+
+local orderVolLimit = easygetter.GetFirstActiveOVL(depositId)
+
+local marginTask = nil
+local margCalcSettings = nil
+local orderVolumeRisk = nil
+
+if (orderVolLimit ~= nil) then
+	orderVolumeRisk = orderVolLimit:getUniqueRisk()
+	if ( orderVolLimit:hasMarginTask() ) then
+		marginTask = orderVolLimit:getMarginTask()
+		margCalcSettings = marginTask:getMargCalcSettings()
+	end
+end
+
+if (orderVolLimit ~= nil) then
+	table.insert (depositItem, {'credit_type',  '1'})
+end
+
+local cannot_over_credit = "Unknown"
+local cannot_over_creditMap = {["Rejected"]="N", ["NotApproved"]="A"}
+if	(orderVolLimit == nil) then
+	cannot_over_credit = "Y"
+else
+	cannot_over_credit = cannot_over_creditMap[orderVolLimit:getRejectAction()]
+end
+table.insert (depositItem, {'cannot_over_credit', cannot_over_credit})
+
+local cash_checking = "N"
+if	(orderVolLimit == nil) then
+	cash_checking = "N"
+elseif (orderVolLimit:getCalculationMethod() == "CashBalance") then
+	cash_checking = "Y"
+end
+table.insert (depositItem, {'cash_checking', cash_checking})
+
+--**table.insert (depositItem, {'position_limit', ''}) -- not available for now in Account Setting
+--**table.insert (depositItem, {'cash_balance_prev', }) -- not available for now in limit and risk
+
+
+if ( orderVolLimit ~= nil ) then
+	table.insert (depositItem, {'mark_to_market', common.BoolleanToYNMapping[orderVolLimit:includeUPL()] })	
+	table.insert (depositItem, {'credit_line', easygetter.EvenAmountToDouble(orderVolLimit:getCreditLine ())})
+	table.insert (depositItem, {'buy_limit', easygetter.EvenAmountToDouble(orderVolLimit:getLimitAmount())})
+	table.insert (depositItem, {'equity_balance_pre', easygetter.EvenAmountToDouble(orderVolLimit:getPreviousEquityBalance()) })
+	table.insert (depositItem, {'excess_equity_bal_prev', easygetter.EvenAmountToDouble(orderVolLimit:getPreviousExcessEquityBalance())})
+	table.insert (depositItem, {'unreal_pl_prev', easygetter.EvenAmountToDouble(orderVolLimit:getPreviousFutureUPL())+ easygetter.EvenAmountToDouble(orderVolLimit:getPreviousOptionUPLGross())})	
+	table.insert (depositItem, {'magin_bal_prev', easygetter.EvenAmountToDouble(orderVolLimit:getPreviousInitialMargin())})
+  local prev_call_force = tostring(orderVolLimit:getPreviousCallForce())
+	table.insert (depositItem, {'call_force_flag_prev', CallForceMapping[prev_call_force]})
+	table.insert (depositItem, {'call_force_amount_prev', easygetter.EvenAmountToDouble(orderVolLimit:getPreviousForceMargin())})
+	table.insert (depositItem, {'withdrawal_port', easygetter.EvenAmountToDouble(orderVolLimit:getDepositWithdrawal())})
+end
+
+if(margCalcSettings ~= nil) then
+  local margin_call_name = tostring(margCalcSettings:getName())
+  table.insert (depositItem, {'margin_method', margin_call_name})
+end
+
+if(orderVolumeRisk ~= nil) then				
+  table.insert (depositItem, {'commission', easygetter.EvenAmountToDouble(orderVolumeRisk:getTurnoverFee()) })
+  table.insert (depositItem, {'expected_commission', easygetter.EvenAmountToDouble(orderVolumeRisk:getTurnoverFee()) + easygetter.EvenAmountToDouble(orderVolumeRisk:getOrderFee())})
+  table.insert (depositItem, {'liquid_lvalue_curr',  easygetter.EvenAmountToDouble(orderVolumeRisk:getLiquidationValue())})
+  table.insert (depositItem, {'equity_balance_expected', easygetter.EvenAmountToDouble(orderVolumeRisk:getExpectedEquityBalance())})
+  table.insert (depositItem, {'equity_balance_port', easygetter.EvenAmountToDouble(orderVolumeRisk:getEquityBalance())})
+  table.insert (depositItem, {'excess_quity_bal_expected', easygetter.EvenAmountToDouble(orderVolumeRisk:getExpectedExcessEquityBalance())})
+  table.insert (depositItem, {'excess_quity',easygetter.EvenAmountToDouble(orderVolumeRisk:getExcessEquityBalance()) })
+  table.insert (depositItem, {'excess_quity_bal_port',easygetter.EvenAmountToDouble(orderVolumeRisk:getExcessEquityBalance()) })
+  table.insert (depositItem, {'unreal_pl_port', easygetter.EvenAmountToDouble(orderVolumeRisk:getTotalFutureUPLGross())+easygetter.EvenAmountToDouble(orderVolumeRisk:getTotalOptionUPLGross())})
+  table.insert (depositItem, {'magin_bal_expected', easygetter.EvenAmountToDouble(orderVolumeRisk:getExpectedMargin())})
+  table.insert (depositItem, {'magin_bal_port', easygetter.EvenAmountToDouble(orderVolumeRisk:getExpectedMargin())-easygetter.EvenAmountToDouble(orderVolumeRisk:getOrderMargin())})
+  local call_force = tostring(orderVolumeRisk:getCallForce())
+  table.insert (depositItem, {'call_force_flag_expected', CallForceMapping[call_force]})
+  table.insert (depositItem, {'call_force_flag_port',CallForceMapping[call_force]})
+  table.insert (depositItem, {'call_force_amount_expected', easygetter.EvenAmountToDouble(orderVolumeRisk:getForceMargin())+easygetter.EvenAmountToDouble(orderVolumeRisk:getOrderMargin())})
+  table.insert (depositItem, {'call_force_amount_port',easygetter.EvenAmountToDouble(orderVolumeRisk:getForceMargin()) })		
+end
+  
+
+table.insert (depositList, depositItem)
+
+--common.print_table(depositList)
+common.InsertRecords(db_file, log_file, table_name_deposit, depositList, debug_mode)
+
+local orders = easygetter.GetOrders( depositId, entryFrom, entryTo )
+
+local orderList = {}
+local orderItem = {}
+
+local seriesNumberList = {}
+local hasOpenOrder = false
+local hasCloseOrder = false
+
+for _,no in pairs( orders ) do
+	local order = fo.Order( no )
+
+	local orderHandlingType = order:getHandlingType()
+	if (orderHandlingType == 'TradingOrder' or orderHandlingType == 'BlockTrade') then		
+		local orderlegs = order:getOrderLegs()
+		for _,orderLeg in pairs(orderlegs) do
+			orderItem = {}
+			local cdate = common.GetSettlementDateFromOrder(order);
+			if( cdate ~= nil) then
+				table.insert (orderItem, {'cdate', cdate:toString("%Y%m%d")})
+			end
+
+
+			local series = orderLeg:getContract():getContractCode()
+			seriesNumberList[series] = series
+      		table.insert (orderItem, {'series', series})
+			
+			local LongShort = common.BuySellToLSMapping[orderLeg:getOrderKind()] or ''
+			
+			table.insert (orderItem, {'long_short', LongShort})
+
+
+      		local position = orderLeg:getOpenClose()
+      		table.insert (orderItem, {'pos', position})
+			
+			local total_qty = orderLeg:getTotalQty()
+			
+			-- **pending pdv to solve the bug in found in CNS-3, drop copy order doesn't have validation quote
+			local validation_quote = easygetter.EvenAmountToDouble(orderLeg:getValidationQuote())
+			
+			-- Use current day for tickfactor for open, total value.			
+			local tick_factor = easygetter.EvenAmountToDouble(orderLeg:getContract():getTickFactor(nil,tim.Date.current()));	
+					
+			table.insert (orderItem, {'price', orderLeg:getPriceLimit()})
+
+			local open_qty = orderLeg:getOpenQty()
+			table.insert (orderItem, {'open_vol', orderLeg:getOpenQty()})	
+			local open_value = open_qty*validation_quote*tick_factor
+			table.insert (orderItem, {'open_value', open_value })
+			
+			local cancel_value = 0
+			local cancel_qty = 0
+			-- BA to confirm whether need to include the expire order as cancel qty
+			if(order:getStatus() == "Closed" and 
+				(order:getOrderClosedBy()=="PartExecCancel" or order:getOrderClosedBy()=="NoExecCancel" ) ) then
+				cancel_qty = orderLeg:getTotalQty()-orderLeg:getExecQty()
+				table.insert (orderItem, {'cancel_qty', cancel_qty})
+				cancel_value = cancel_qty*validation_quote*tick_factor
+				table.insert (orderItem, {'cancel_value', cancel_value})
+			end
+			
+			local match_qty = orderLeg:getExecQty()
+			table.insert (orderItem, {'match_vol', match_qty})
+	
+			local matched_value = 0
+			if (match_qty ~= 0 ) then
+				-- Use value day for tickfactor for matched value.
+				tick_factor = easygetter.EvenAmountToDouble(orderLeg:getContract():getTickFactor(nil,cdate));
+				local match_avg_price =  orderLeg:getAvgExecPrice()
+				table.insert (orderItem, {'match_price', match_avg_price })
+				matched_value = match_qty*match_avg_price*tick_factor
+				table.insert (orderItem, {'matched_value', matched_value})
+				table.insert (orderItem, {'multiplier', tick_factor})
+			end
+			
+			-- total qty = matched qty + open/cancel qty
+			-- total value = matched value + open/cancel value
+			table.insert (orderItem, {'vol', match_qty + open_qty + cancel_qty})
+			table.insert (orderItem, {'total_value', matched_value + open_value + cancel_value})
+					
+			local cont_size = 0
+			local comm_vat = 0
+			local net = 0
+			for _,op in pairs( order:getOrderOperations() ) do
+				if op:getTransactionType() == "Match" then
+					local oplegs = op:getOrderOperationLegs()
+					if (#oplegs ~= 1) then
+						confirmreport.announceGenerationFailure("One order operation should and only should have one order opeation legs!")
+						print("One order operation should and only should have one order opeation legs!")
+						os.exit(1)
+					elseif(oplegs[1]:getContract():getContractCode() == orderLeg:getContract():getContractCode()) then
+						local ta = oplegs[1]:getEffectiveTransaction()
+						local posting = fo.Posting(ta,1)     	 
+				     	cont_size = cont_size + easygetter.EvenAmountToDouble(posting:getTurnoverAccountCurrGross())
+				     	if (posting:hasFeeValue(nil,maps.NameToFee("Custodian")) ) then
+				     		comm_vat = comm_vat + easygetter.EvenAmountToDouble(posting:getFeeAccountCurr(nil,maps.NameToFee("Custodian")))
+				     	end 
+				     	net = net + easygetter.EvenAmountToDouble(posting:getTurnoverAccountCurrNet())
+					end
+				end
+			end
+			
+			table.insert (orderItem, {'cont_size', cont_size})
+			table.insert (orderItem, {'comm_vat', comm_vat})
+			table.insert (orderItem, {'net', net})
+			
+			if (position == "Open") then
+        hasOpenOrder = true
+      		elseif (position == "Close") then
+        hasCloseOrder = true
+      		end
+			
+			table.insert (orderList, orderItem) 
+		end				
+		
+	end
+end
+
+common.InsertRecords(db_file, log_file, table_name_order, orderList, debug_mode)
+
+
+-- The following part is for the table "DECIDE_order_summary", which is better to be done after all orders information got
+local breakdown_order_map = {}
+
+for _,order_item_for_summary in ipairs(orderList) do
+  local column_names, column_values = RecordListToColumnsAndValuesString(order_item_for_summary)
+
+  -- Not every orders share the same column_names, so have to scan it every time
+  local order_tag_table = {}
+  for order_tag_str in string.gmatch(column_names, '([^,]+)') do
+    order_tag_str = string.gsub(order_tag_str, "'", "")   -- remove the single quote wrapping the string
+    table.insert(order_tag_table, order_tag_str)
+  end
+
+  local breakdown_order_table = {}
+  local index = 1
+  for order_info in string.gmatch(column_values, '([^,]+)') do
+    order_info = string.gsub(order_info, "'", "")   -- remove the single quote wrapping the string
+    local order_tag = order_tag_table[index]
+    breakdown_order_table[order_tag] = order_info
+    index = index + 1
+  end
+
+  table.insert (breakdown_order_map, breakdown_order_table)
+
+end
+
+function checkFieldValue(value)
+  if (value ~= nil) then
+    return value
+  else
+    return 0
+  end
+end
+
+local summary_order_table = {}
+local temp_table_for_open_long_series = {}
+local temp_table_for_open_short_series = {}
+local temp_table_for_close_long_series = {}
+local temp_table_for_close_short_series = {}
+
+function mergeSeries(series_number, temp_series_table)
+  local mergedResult = {}
+
+  local cdate = 0
+  local accumQty = 0
+  local accumContSize = 0
+  local accumCommVAT = 0
+  local accumMatVolxPrice = 0
+  local net = 0
+  local avg_price = 0
+  local multiplier = 0
+  local price = 0
+  local position = ""
+  local side = ""
+
+  -- For some orders which have never matched, they will be found but have totally no values. This is for us to have a better understand about actual situation of the passed series number.
+  local seriesFound = false
+
+  -- keep it for debug purpose
+  -- print ("---------Print Merged Values---------")
+  -- print("Series Num in function: " .. series_number)
+
+  if (#temp_series_table == 0) then
+    -- print ("Table Nil")
+    return nil
+  else
+    for _,temp_series in ipairs (temp_series_table) do
+      if (series_number == checkFieldValue(temp_series["series"])) then
+        seriesFound = true
+        cdate = checkFieldValue(temp_series["cdate"])
+        -- Assume mutliplier available when price ready
+        price = checkFieldValue(temp_series["price"])
+        price = tonumber(price)
+        if (price > 0) then
+          multiplier = checkFieldValue(temp_series["multiplier"])
+        end
+        position = temp_series["pos"]
+        side = temp_series["long_short"]
+        accumQty = accumQty + checkFieldValue(temp_series["match_vol"])
+        accumMatVolxPrice = accumMatVolxPrice + (checkFieldValue(temp_series["match_vol"]) * checkFieldValue(temp_series["match_price"]))
+        accumContSize = accumContSize + checkFieldValue(temp_series["cont_size"])
+        accumCommVAT = accumCommVAT + checkFieldValue(temp_series["comm_vat"])
+      end
+    end
+
+    if(seriesFound == true) then
+      -- print ("Series Found!")
+      if (accumQty == 0) then
+        avg_price = 0
+      else
+        avg_price = accumMatVolxPrice/accumQty
+      end
+
+      -- Brokers request net = accumContSize, keep this logic before further notice.
+      net = accumContSize
+
+      -- keep it for debug purpose
+      -- print("Clear Date: " .. cdate)
+      -- print("Postion: " .. position)
+      -- print("Side: " .. side)
+      -- print("Accum Qty: " .. accumQty)
+      -- print("Avg Price: " .. avg_price)
+      -- print("Multiplier: " .. multiplier)
+      -- print("Accum Cont Size: " .. accumContSize)
+      -- print("Accum Comm VAT: " .. accumCommVAT)
+      -- print("Net: " .. net)
+
+      if (avg_price > 0 or multiplier > 0 or accumContSize > 0) then
+        mergedResult["summary_cdate"] = cdate
+        mergedResult["summary_pos"] = position
+        mergedResult["summary_series"] = series_number
+        mergedResult["summary_side"] = side
+        mergedResult["summary_qty"] = accumQty
+        mergedResult["summary_price"] = avg_price
+        mergedResult["summary_multi"] = multiplier
+        mergedResult["summary_cont_size"] = accumContSize
+        mergedResult["summary_comm_vat"] = accumCommVAT
+        mergedResult["summary_net"] = net
+
+        return mergedResult
+      else
+        return nil
+      end
+    else
+      -- print ("Series Not Found! Return Nil!")
+      return nil
+    end
+  end
+end
+
+for k, v in pairs (seriesNumberList) do
+  local series_number = k
+  for _,breakdown_order in pairs ( breakdown_order_map ) do
+    if (series_number == breakdown_order["series"]) then
+      if (breakdown_order["pos"] == "Open" and breakdown_order["long_short"] == "L") then
+        table.insert(temp_table_for_open_long_series, breakdown_order)
+      elseif (breakdown_order["pos"] == "Open" and breakdown_order["long_short"] == "S") then
+        table.insert(temp_table_for_open_short_series, breakdown_order)
+      elseif (breakdown_order["pos"] == "Close" and breakdown_order["long_short"] == "L") then
+        table.insert(temp_table_for_close_long_series, breakdown_order)
+      elseif (breakdown_order["pos"] == "Close" and breakdown_order["long_short"] == "S") then
+        table.insert(temp_table_for_close_short_series, breakdown_order)
+      end
+    end
+  end
+
+  table.insert(summary_order_table, mergeSeries(series_number, temp_table_for_open_long_series))
+  table.insert(summary_order_table, mergeSeries(series_number, temp_table_for_open_short_series))
+  table.insert(summary_order_table, mergeSeries(series_number, temp_table_for_close_long_series))
+  table.insert(summary_order_table, mergeSeries(series_number, temp_table_for_close_short_series))
+
+end
+
+local totalOpenNet = 0
+local totalCloseNet = 0
+local totalOpenContSize = 0
+local totalCloseContSize = 0
+local totalNetContSize = 0
+local totalNetCommVAT = 0
+local totalNetNet = 0
+
+-- For ALL scenarios, totalNetCommVAT will always be the summation value of every Comm+VAT in summary_order_table
+for _,summary_order in ipairs (summary_order_table) do
+  totalNetCommVAT = totalNetCommVAT + checkFieldValue(summary_order["summary_comm_vat"])
+end
+
+-- Place outside for an easier debug purpose
+local cal_rec_for_found_series = {}
+
+-- totalOpenContSize, totalCloseContSize and totalNetContSize Calculations
+if (hasOpenOrder == true and hasCloseOrder == false) then   -- Scenario #1 Open Orders Only
+  for _,summary_order in ipairs (summary_order_table) do
+    totalOpenContSize = totalOpenContSize + checkFieldValue(summary_order["summary_cont_size"])
+  end
+  totalNetContSize = -totalOpenContSize
+elseif (hasOpenOrder == true and hasCloseOrder == true) then  -- Scenario #2, #3 and #4
+  -- check for pair orders here
+  for k, v in pairs (seriesNumberList) do
+    local series_number = k
+    local seriesFoundTimes = 0
+
+    for _,summary_order in ipairs (summary_order_table) do
+      if (series_number == checkFieldValue(summary_order["summary_series"])) then
+        seriesFoundTimes = seriesFoundTimes + 1
+        if (seriesFoundTimes == 1) then
+          -- May be a single order or not yet found the another half. Save to the table "cal_rec_for_found_series" first
+          local temp_rec_table = {}
+          local series_to_save = checkFieldValue(summary_order["summary_series"])
+          temp_rec_table["summary_series"] = series_to_save
+          local side_to_save = checkFieldValue(summary_order["summary_side"])
+          temp_rec_table["summary_side"] = side_to_save
+          local cont_size_to_save = checkFieldValue(summary_order["summary_cont_size"])
+          temp_rec_table["summary_cont_size"] = cont_size_to_save
+
+          temp_rec_table["pair_status"] = "Single"
+
+          table.insert(cal_rec_for_found_series, temp_rec_table)
+        elseif (seriesFoundTimes == 2) then
+          -- Pair found! Search the another half in "cal_rec_for_found_series".
+          for _,cal_rec in ipairs (cal_rec_for_found_series) do
+            if (series_number == checkFieldValue(cal_rec["summary_series"])) then
+              -- Mark the pair_status
+              cal_rec["pair_status"] = "Paired"
+              -- Check the side of this order then perform short - long logic
+              if (checkFieldValue(cal_rec["summary_side"] == "L")) then
+                local resultantContSize = checkFieldValue(summary_order["summary_cont_size"]) - checkFieldValue(cal_rec["summary_cont_size"])
+                cal_rec["summary_cont_size"] = resultantContSize
+              elseif (checkFieldValue(cal_rec["summary_side"] == "S")) then
+                local resultantContSize = checkFieldValue(cal_rec["summary_cont_size"]) - checkFieldValue(summary_order["summary_cont_size"])
+                cal_rec["summary_cont_size"] = resultantContSize
+              end
+            end
+          end
+        end
+      end
+    end
+  end
+
+  for _,summary_order in ipairs (summary_order_table) do
+    if (summary_order["summary_pos"] == "Open") then
+      totalOpenContSize = totalOpenContSize + checkFieldValue(summary_order["summary_cont_size"])
+    elseif (summary_order["summary_pos"] == "Close") then
+      totalCloseContSize = totalCloseContSize + checkFieldValue(summary_order["summary_cont_size"])
+    end
+  end
+
+  for _,cal_rec in ipairs (cal_rec_for_found_series) do
+    if (cal_rec["pair_status"] == "Paired") then
+      totalNetContSize = totalNetContSize + checkFieldValue(cal_rec["summary_cont_size"])
+    elseif (cal_rec["pair_status"] == "Single") then
+      -- BA confirmed both Single Long and Single Short are the same case
+      totalNetContSize = totalNetContSize - checkFieldValue(cal_rec["summary_cont_size"])
+    end
+  end
+elseif (hasOpenOrder == false and hasCloseOrder == true) then -- Scenario #5 Close Orders Only
+  for _,summary_order in ipairs (summary_order_table) do
+    totalCloseContSize = totalCloseContSize + checkFieldValue(summary_order["summary_cont_size"])
+  end
+  totalNetContSize = totalCloseContSize
+end
+
+-- debug purpose
+-- for _,cal_rec_table in ipairs (cal_rec_for_found_series) do
+  -- print ("------------Print cal_rec_for_found_series-----------")
+  -- for k,v in pairs (cal_rec_table) do
+    -- print (k, "=>", v)
+  -- end
+-- end
+
+-- Brokers request to have below logics, keep this before further notice.
+totalOpenNet = totalOpenContSize
+totalCloseNet = totalCloseContSize
+
+-- For ALL scenarios, totalNetNet = totalNetContSize - totalNetCommVAT
+totalNetNet = totalNetContSize - totalNetCommVAT
+
+-- debug purpose
+-- print ("--------Print Nets--------")
+-- print(totalOpenNet)
+-- print(totalCloseNet)
+-- print(totalOpenContSize)
+-- print(totalCloseContSize)
+-- print(totalNetContSize)
+-- print(totalNetCommVAT)
+-- print(totalNetNet)
+
+local summaryOrderList = {}
+
+-- Write all summary orders and the calculated values to database
+for _,summary_order in ipairs (summary_order_table) do
+  local summaryOrderItem = {}
+
+  table.insert(summaryOrderItem, {'summary_cdate', summary_order["summary_cdate"]})
+  table.insert(summaryOrderItem, {'summary_pos', summary_order["summary_pos"]})
+  table.insert(summaryOrderItem, {'summary_series', summary_order["summary_series"]})
+  table.insert(summaryOrderItem, {'summary_side', summary_order["summary_side"]})
+  table.insert(summaryOrderItem, {'summary_qty', summary_order["summary_qty"]})
+  table.insert(summaryOrderItem, {'summary_price', summary_order["summary_price"]})
+  table.insert(summaryOrderItem, {'summary_multi', summary_order["summary_multi"]})
+  table.insert(summaryOrderItem, {'summary_cont_size', summary_order["summary_cont_size"]})
+  table.insert(summaryOrderItem, {'summary_comm_vat', summary_order["summary_comm_vat"]})
+  table.insert(summaryOrderItem, {'summary_net', summary_order["summary_net"]})
+  table.insert(summaryOrderItem, {'summary_total_open_cont_size', totalOpenContSize})
+  table.insert(summaryOrderItem, {'summary_total_close_cont_size', totalCloseContSize})
+  table.insert(summaryOrderItem, {'summary_total_open_net', totalOpenNet})
+  table.insert(summaryOrderItem, {'summary_total_close_net', totalCloseNet})
+  table.insert(summaryOrderItem, {'summary_total_net_cont_size', totalNetContSize})
+  table.insert(summaryOrderItem, {'summary_total_net_comm_vat', totalNetCommVAT})
+  table.insert(summaryOrderItem, {'summary_total_net_net', totalNetNet})
+
+  table.insert(summaryOrderList, summaryOrderItem)
+end
+
+common.InsertRecords(db_file, log_file, table_name_summary, summaryOrderList, debug_mode)

@@ -6,6 +6,7 @@ local tim = require "tim"
 local maps = require "maps"
 local accpos = require "accpos"
 local mandator = require "mandator"
+local rtutils = require "rtutils"
 
 local depositId = ""
 local entryFrom = ""
@@ -92,7 +93,8 @@ function CreateSchema()
 	'account_name' .. sql_column_text,
 	'account_type' .. sql_column_text,
   'trader_name' .. sql_column_text,
-	'date' .. sql_column_text
+	'date' .. sql_column_text,
+	'settlement' .. sql_column_text,
 	}},
   {table_name_order,{
 	'seq' .. sql_column_integer,
@@ -149,19 +151,18 @@ function getDeposit(depositId)
   if (DECIDE_deposit_obj:hasAccountType()) then
   	table.insert (depositItem, {'account_type', DECIDE_deposit_obj:getAccountType():getName() })
 	end
-  local client = DECIDE_deposit_obj:getClient()
-  if (client:hasAccountManager()) then
-    local user = client:getAccountManager()
-    local person = user:getPerson()
-    local trader_name = person:getName()
-    table.insert(depositItem,{'trader_name',trader_name})    
-  end
+
+	local am = rtutils.getAccountManager(DECIDE_deposit_obj) 
+  if am then
+  	table.insert(depositItem,{'trader_name',am:getName()})
+	end
 
  	local reportDate = tim.TimeStamp(entryFrom):toString("%d.%m.%y")
 	--reportDate = time.Date(reportDate)
 	--tim.Date(entryFrom)
-	local nextDate = getNextBusDate(tim.Date(reportDate))
+	local nextDate,settlement = getNextBusDate(tim.Date(reportDate))
 	table.insert(depositItem,{'date',nextDate})
+	table.insert(depositItem,{'settlement',settlement})
 	table.insert(depositList,depositItem)
 
 

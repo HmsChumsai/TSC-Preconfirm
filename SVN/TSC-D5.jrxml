@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="TSC-D5" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="91637d31-8a9d-46aa-9a63-b8b1c4353b9e">
 	<property name="ireport.zoom" value="2.253944402704733"/>
-	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="131"/>
+	<property name="ireport.x" value="267"/>
+	<property name="ireport.y" value="58"/>
 	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA["D:\\George\\ireport\\TSC-D1\\"]]></defaultValueExpression>
 	</parameter>
@@ -14,6 +14,7 @@
 	<field name="account_type" class="java.lang.Object"/>
 	<field name="trader_name" class="java.lang.Object"/>
 	<field name="date" class="java.lang.Object"/>
+	<field name="settlement" class="java.lang.Object"/>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
@@ -69,28 +70,28 @@
 				<textFieldExpression><![CDATA[$F{account_name}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement uuid="d81b3ae5-3750-4798-9032-520a1d442cd7" x="298" y="92" width="128" height="11"/>
+				<reportElement uuid="d81b3ae5-3750-4798-9032-520a1d442cd7" x="271" y="92" width="117" height="11"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{account_no}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement uuid="827ca033-9699-41ce-80d8-23167890ad87" x="298" y="103" width="128" height="11"/>
-				<textElement>
+				<reportElement uuid="827ca033-9699-41ce-80d8-23167890ad87" x="271" y="103" width="117" height="11"/>
+				<textElement verticalAlignment="Middle">
 					<font fontName="Arial Unicode MS" size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{trader_name}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement uuid="7ba86f1d-ebf7-4318-be73-1991422a64dd" x="210" y="92" width="88" height="11"/>
+				<reportElement uuid="7ba86f1d-ebf7-4318-be73-1991422a64dd" x="183" y="92" width="88" height="11"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<text><![CDATA[ACCOUNT NO 	:]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="11e878ef-4650-4599-a11b-c094b30ca05e" x="210" y="103" width="88" height="11"/>
+				<reportElement uuid="11e878ef-4650-4599-a11b-c094b30ca05e" x="183" y="103" width="88" height="11"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
@@ -111,32 +112,32 @@
 				<text><![CDATA[TODAY CONFIRMATION]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="e0337a44-261a-4fc0-830f-82d98f82dbd7" x="426" y="92" width="45" height="11"/>
-				<textElement>
+				<reportElement uuid="e0337a44-261a-4fc0-830f-82d98f82dbd7" x="444" y="92" width="32" height="11"/>
+				<textElement textAlignment="Right">
 					<font size="8"/>
 				</textElement>
-				<text><![CDATA[PAGE	:]]></text>
+				<text><![CDATA[PAGE :]]></text>
 			</staticText>
 			<textField>
-				<reportElement uuid="76b4b584-74a3-4ce4-bd70-d5aab4fe86ec" x="471" y="92" width="11" height="11"/>
+				<reportElement uuid="76b4b584-74a3-4ce4-bd70-d5aab4fe86ec" x="487" y="92" width="11" height="11"/>
 				<textElement textAlignment="Right">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement uuid="7380bb6b-0380-4b4d-9a99-2a6339a94bf2" x="482" y="92" width="10" height="11"/>
-				<textElement textAlignment="Center">
+				<reportElement uuid="d7cbe4a0-0af0-4b17-93c8-a020c14deaa2" x="410" y="125" width="66" height="11"/>
+				<textElement textAlignment="Right">
 					<font size="8"/>
 				</textElement>
-				<text><![CDATA[/]]></text>
+				<text><![CDATA[SETTLEMENT :]]></text>
 			</staticText>
-			<textField>
-				<reportElement uuid="1120bbc7-c8d8-435a-8197-d87b4100ccd9" x="492" y="92" width="13" height="11"/>
+			<textField pattern="dd/MM/yyyy HH.mm.ss">
+				<reportElement uuid="f8a6bd3c-2e8b-4b27-a6db-14052aaf6cbf" x="487" y="125" width="63" height="11"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{settlement}]]></textFieldExpression>
 			</textField>
 		</band>
 	</pageHeader>

@@ -45,20 +45,6 @@
 				<textFieldExpression><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement uuid="7380bb6b-0380-4b4d-9a99-2a6339a94bf2" x="482" y="92" width="10" height="11"/>
-				<textElement textAlignment="Center">
-					<font size="8"/>
-				</textElement>
-				<text><![CDATA[/]]></text>
-			</staticText>
-			<textField>
-				<reportElement uuid="1120bbc7-c8d8-435a-8197-d87b4100ccd9" x="492" y="92" width="13" height="11"/>
-				<textElement>
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
-			</textField>
-			<staticText>
 				<reportElement uuid="daa788fd-135c-4c00-a6dd-4dbbff0cc15b" x="0" y="81" width="207" height="11"/>
 				<textElement>
 					<font fontName="Arial Unicode MS" size="8"/>
@@ -94,25 +80,25 @@
 				<text><![CDATA[Acct Type		:]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="a852f688-5d0c-4266-931c-2b1fb81094de" x="184" y="114" width="84" height="11"/>
+				<reportElement uuid="a852f688-5d0c-4266-931c-2b1fb81094de" x="184" y="114" width="48" height="11"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
-				<text><![CDATA[A/O		:]]></text>
+				<text><![CDATA[A/O	  :    :]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="171d8f46-ab9e-441d-a865-1547252fb471" x="184" y="125" width="84" height="11"/>
+				<reportElement uuid="171d8f46-ab9e-441d-a865-1547252fb471" x="184" y="125" width="48" height="11"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
-				<text><![CDATA[Sell Limit		:]]></text>
+				<text><![CDATA[Sell Limit	  :	:]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="6aa7b1b7-0f07-4c09-be0b-0debf93b07a2" x="184" y="136" width="84" height="11"/>
+				<reportElement uuid="6aa7b1b7-0f07-4c09-be0b-0debf93b07a2" x="184" y="136" width="48" height="11"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
-				<text><![CDATA[Cust Type		:]]></text>
+				<text><![CDATA[Cust Type	  :	:]]></text>
 			</staticText>
 			<textField pattern="dd/MM/yyyy HH.mm.ss">
 				<reportElement uuid="3df6a2d8-0ab8-4cc5-8c12-22aeedb6d0f8" x="452" y="114" width="100" height="11"/>
@@ -136,7 +122,7 @@
 				<textFieldExpression><![CDATA[$F{account_no}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement uuid="90a1ddc8-b23a-444e-9fdd-9fe16e617358" x="268" y="125" width="100" height="11"/>
+				<reportElement uuid="90a1ddc8-b23a-444e-9fdd-9fe16e617358" x="232" y="125" width="120" height="11"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
@@ -178,7 +164,7 @@
 				<text><![CDATA[1]]></text>
 			</staticText>
 			<textField>
-				<reportElement uuid="7d4b458a-d514-4ee8-ba34-13efd7642cc6" x="268" y="114" width="100" height="11"/>
+				<reportElement uuid="7d4b458a-d514-4ee8-ba34-13efd7642cc6" x="232" y="114" width="120" height="11"/>
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial Unicode MS" size="8"/>
 				</textElement>
@@ -189,7 +175,7 @@
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[" "+(new DecimalFormat("###,###,##0.00")).format($F{credit_limit})]]></textFieldExpression>
+				<textFieldExpression><![CDATA[(new DecimalFormat("###,###,##0.00")).format($F{credit_limit})]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement uuid="166af1c8-2d6a-42b3-aac3-b70acba8c058" x="84" y="136" width="100" height="11"/>
@@ -203,10 +189,10 @@
 				<textElement>
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[" "+(new DecimalFormat("###,###,##0.00")).format($F{buy_limit})]]></textFieldExpression>
+				<textFieldExpression><![CDATA[(new DecimalFormat("###,###,##0.00")).format($F{buy_limit})]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement uuid="900fd296-f284-42bf-b0bc-188d3fb1689c" x="268" y="136" width="100" height="11"/>
+				<reportElement uuid="900fd296-f284-42bf-b0bc-188d3fb1689c" x="232" y="136" width="120" height="11"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>

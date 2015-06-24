@@ -12,7 +12,6 @@ function TSCReportUtil.GetOrders( depositId, entryFrom, entryTo, handleAfc )
 			local prevDate = tim.TimeStamp(entryFrom):getUtcDate()
 			local afcTime = tim.ClockTime("10:00")
 			entryFrom = tim.TimeStamp( prevDate, afcTime ):toString( "%Y-%m-%dT%H:%M" )
-			print(entryFrom)
 		end
 		options.entryFrom = entryFrom
 	end
@@ -25,7 +24,6 @@ function TSCReportUtil.GetOrders( depositId, entryFrom, entryTo, handleAfc )
 
 local function cb( orderid )
 	local order = fo.Order( orderid )
-	print('orderid : ',orderid)
 	if not handleAfc or order:getAfterCloseOrder() ~= "Pending" then
 		orders[#orders+1] = orderid
 	end
@@ -131,8 +129,8 @@ function TSCReportUtil.getOrderList(orders,isBillOrder)
 						total_amount_due = total_amount_due-(gross_amt+comm_vat)
 						net = net-amount_due
 					else
-						amount_due=gross_amt+(comm_fee+vat)
-						total_amount_due = total_amount_due+(gross_amt-comm_vat)
+						amount_due=gross_amt-(comm_fee+vat)
+						total_amount_due = total_amount_due+(gross_amt+comm_vat)
 						total_gross=total_gross+gross_amt
 						net = net + amount_due
 					end
@@ -267,24 +265,18 @@ function setSeq(orderList,port_seq_sell,port_seq_buy)
 	end	
 	for i,j in pairs(orderList) do
 		local buy_sell = j[4][2]
-		print("i : ",i," j : ",utils.prettystr(j))
-		print("j.side",utils.prettystr(j[4][2]))
 		if buy_sell=="Buy" then 
 			if context_buy[j[3][2]..j[8][2]] and context_buy[j[3][2]..j[8][2]] ~= nil then
-				print("Founded",context_buy[j[3][2]..j[8][2]])
 				j[11][2] = context_buy[j[3][2]..j[8][2]]
 			
 			else
-				print("Not Founded")
 				j[11][2] = ''
 			end
 		else
 			if context_sell[j[3][2]..j[8][2]] and context_sell[j[3][2]..j[8][2]] ~= nil then
-				print("Founded",context_sell[j[3][2]..j[8][2]])
 				j[11][2] = context_sell[j[3][2]..j[8][2]]
 			
 			else
-				print("Not Founded")
 				j[11][2] = ''
 			end
 		end
@@ -292,12 +284,10 @@ function setSeq(orderList,port_seq_sell,port_seq_buy)
 end	
 
 function compare(a,b)
-	--print(utils.prettystr(a))
   return a.symbol < b.symbol
 end
 
 function commonOrderData(orderList,orderItem)
-	print('order_no',no)
 	table.insert (orderItem,{'order_no',no})
 	table.insert (orderItem,{'stock',symbol})
 	table.insert (orderItem,{'side',buy_sell})
@@ -330,7 +320,8 @@ function getNextBusDate(stDate)
 	local businesscenter = fo.BusinessCenter("THAILAND")
 	local tradingCalendar = businesscenter:getTradingCalendar()
 	local nextDate= tradingCalendar:addActiveDays( stDate,1, isNONE ):toString("%d/%m/%y")
-return nextDate
+	local settlement = tradingCalendar:addActiveDays( stDate,4, isNONE ):toString("%d/%m/%y")
+return nextDate,settlement
 
 end
 
@@ -351,7 +342,6 @@ function TSCReportUtil.checkBusDate(entryFrom)
 	local tradingCalendar = businesscenter:getTradingCalendar()
 	local temp=tradingCalendar:addActiveDays( tim.Date(entryFrom),-1, isNONE):toString("%Y-%m-%dT17:00:00")
 	local ret=tradingCalendar:correctDate( tim.Date(entryFrom),'BACKWARD' ):toString("%Y-%m-%dT17:00:00")
-	print("entryFrom Fixed : ",ret)
 	return ret
 end
 return TSCReportUtil

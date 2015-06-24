@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="TSC-D6_subreport1" pageWidth="555" pageHeight="802" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="0922cf29-3790-4e74-8e67-619396ffe695">
-	<property name="ireport.zoom" value="3.0"/>
+	<property name="ireport.zoom" value="2.0490403660952117"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<property name="ireport.callouts" value="##Wed Mar 19 16:44:18 CST 2014"/>
@@ -33,10 +33,6 @@ order by side,stock,price desc]]>
 		<variableExpression><![CDATA[$F{sum(decide_order.comm_fee)}]]></variableExpression>
 		<initialValueExpression><![CDATA[0.0]]></initialValueExpression>
 	</variable>
-	<variable name="SUM_vat" class="java.lang.Double" resetType="Group" resetGroup="side" calculation="Sum">
-		<variableExpression><![CDATA[$F{sum(decide_order.vat)}]]></variableExpression>
-		<initialValueExpression><![CDATA[0.0]]></initialValueExpression>
-	</variable>
 	<variable name="SUM_amount_due" class="java.lang.Double" resetType="Group" resetGroup="side" calculation="Sum">
 		<variableExpression><![CDATA[$F{sum(decide_order.amount_due)}]]></variableExpression>
 		<initialValueExpression><![CDATA[0.0]]></initialValueExpression>
@@ -49,30 +45,38 @@ order by side,stock,price desc]]>
 		<variableExpression><![CDATA[$F{sum(decide_order.vat)}]]></variableExpression>
 		<initialValueExpression><![CDATA[0.0]]></initialValueExpression>
 	</variable>
-	<variable name="SUM_SIDE_STOCK_PRICE" class="java.lang.Number" incrementType="Group" incrementGroup="session" calculation="Average">
+	<variable name="SUM_SIDE_STOCK_PRICE" class="java.lang.Number" incrementType="Group" incrementGroup="session" calculation="Sum">
 		<variableExpression><![CDATA[$F{price}]]></variableExpression>
 	</variable>
 	<variable name="SUM_SIDE_STOCK_VOL" class="java.lang.Number" resetType="Group" resetGroup="stock" calculation="Sum">
 		<variableExpression><![CDATA[$F{sum(decide_order.vol)}]]></variableExpression>
+		<initialValueExpression><![CDATA[0]]></initialValueExpression>
 	</variable>
 	<variable name="SUM_SIDE_STOCK_GROSS" class="java.lang.Number" resetType="Group" resetGroup="stock" calculation="Sum">
 		<variableExpression><![CDATA[$F{sum(decide_order.gross_amt)}]]></variableExpression>
+		<initialValueExpression><![CDATA[0]]></initialValueExpression>
 	</variable>
 	<variable name="SUM_SIDE_STOCK_COM" class="java.lang.Number" resetType="Group" resetGroup="stock" calculation="Sum">
 		<variableExpression><![CDATA[$F{sum(decide_order.comm_fee)}]]></variableExpression>
 	</variable>
-	<variable name="SUM_SIDE_STOCK_VAT" class="java.lang.Number" resetType="Group" resetGroup="session" calculation="Sum">
+	<variable name="SUM_SIDE_STOCK_VAT" class="java.lang.Number" resetType="Group" resetGroup="stock" calculation="Sum">
 		<variableExpression><![CDATA[$F{sum(decide_order.vat)}]]></variableExpression>
+		<initialValueExpression><![CDATA[0]]></initialValueExpression>
 	</variable>
 	<variable name="SUM_SIDE_STOCK_AMOUNT_DUE" class="java.lang.Number" resetType="Group" resetGroup="stock" calculation="Sum">
 		<variableExpression><![CDATA[$F{sum(decide_order.amount_due)}]]></variableExpression>
 	</variable>
-	<variable name="AVG_SIDE_STOCK_PRICE" class="java.lang.Number" resetType="None">
-		<variableExpression><![CDATA[new Double($V{SUM_SIDE_STOCK_VOL}.doubleValue() == 0 ? 0 : ($V{SUM_SIDE_STOCK_GROSS}.doubleValue()/$V{SUM_SIDE_STOCK_VOL}.doubleValue()))]]></variableExpression>
+	<variable name="AVG_SIDE_STOCK_PRICE" class="java.lang.Number" resetType="Group" resetGroup="stock">
+		<variableExpression><![CDATA[new Double($V{SUM_SIDE_STOCK_GROSS}.doubleValue() / $V{SUM_SIDE_STOCK_VOL}.doubleValue() )]]></variableExpression>
+		<initialValueExpression><![CDATA[0]]></initialValueExpression>
 	</variable>
 	<variable name="STOCK_SEQ" class="java.lang.Integer" resetType="Group" resetGroup="side" incrementType="Group" incrementGroup="side" calculation="Count">
 		<variableExpression><![CDATA[$F{stock}]]></variableExpression>
 		<initialValueExpression><![CDATA[1]]></initialValueExpression>
+	</variable>
+	<variable name="SUM_VAT" class="java.lang.Number" resetType="Group" resetGroup="side" calculation="Sum">
+		<variableExpression><![CDATA[$F{sum(decide_order.vat)}]]></variableExpression>
+		<initialValueExpression><![CDATA[0]]></initialValueExpression>
 	</variable>
 	<group name="session">
 		<groupExpression><![CDATA[]]></groupExpression>
@@ -155,11 +159,11 @@ order by side,stock,price desc]]>
 					<textFieldExpression><![CDATA[$F{net}== null ? "" :(new DecimalFormat("###,###,##0.00")).format($F{net})]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement uuid="c745b315-1da8-4efc-bf57-b78e7e3f3948" x="383" y="72" width="83" height="12"/>
-					<textElement textAlignment="Right" verticalAlignment="Middle">
+					<reportElement uuid="c745b315-1da8-4efc-bf57-b78e7e3f3948" x="401" y="72" width="65" height="12"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font size="8"/>
 					</textElement>
-					<textFieldExpression><![CDATA[$F{paid_received}]]></textFieldExpression>
+					<textFieldExpression><![CDATA["[ "+ $F{paid_received}+" ]"]]></textFieldExpression>
 				</textField>
 				<line>
 					<reportElement uuid="d61b2d00-7032-4cfc-8b6b-1a2e9788bf3f" x="125" y="15" width="430" height="1"/>
@@ -197,11 +201,11 @@ order by side,stock,price desc]]>
 					<textFieldExpression><![CDATA[$F{side}]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement uuid="0e83aa8f-0ec7-4024-b161-2d0c22160af2" x="243" y="3" width="55" height="23"/>
+					<reportElement uuid="0e83aa8f-0ec7-4024-b161-2d0c22160af2" x="217" y="3" width="81" height="23"/>
 					<textElement textAlignment="Right" verticalAlignment="Middle">
 						<font size="8" isUnderline="false"/>
 					</textElement>
-					<textFieldExpression><![CDATA[$F{sum(decide_order.gross_amt)} == null ? "" :(new DecimalFormat("###,###,##0.00")).format($F{sum(decide_order.gross_amt)})]]></textFieldExpression>
+					<textFieldExpression><![CDATA[$V{SUM_amt} == null ? "" :(new DecimalFormat("###,###,##0.00")).format($V{SUM_amt})]]></textFieldExpression>
 				</textField>
 				<textField>
 					<reportElement uuid="88381f2b-9b03-4572-9a30-ea950dc789ed" x="317" y="3" width="51" height="23"/>
@@ -215,14 +219,14 @@ order by side,stock,price desc]]>
 					<textElement textAlignment="Right" verticalAlignment="Middle">
 						<font size="8" isUnderline="false"/>
 					</textElement>
-					<textFieldExpression><![CDATA[(new DecimalFormat("###,###,##0.00")).format($V{SUM_vat})]]></textFieldExpression>
+					<textFieldExpression><![CDATA[(new DecimalFormat("###,###,##0.00")).format($V{SUM_VAT})]]></textFieldExpression>
 				</textField>
 				<textField>
 					<reportElement uuid="de5e43dc-8ad7-4f4c-87c4-1285c3abbb8f" x="466" y="3" width="73" height="23"/>
 					<textElement textAlignment="Right" verticalAlignment="Middle">
 						<font size="8" isUnderline="false"/>
 					</textElement>
-					<textFieldExpression><![CDATA[$F{total_amount_due} == null ? "" :(new DecimalFormat("###,###,##0.00")).format($F{total_amount_due})]]></textFieldExpression>
+					<textFieldExpression><![CDATA[(new DecimalFormat("###,###,##0.00")).format($V{SUM_amount_due})]]></textFieldExpression>
 				</textField>
 				<line>
 					<reportElement uuid="f16a9a31-a780-4cb3-a00a-a142d0510f58" x="0" y="29" width="555" height="1"/>
@@ -237,7 +241,7 @@ order by side,stock,price desc]]>
 		<groupExpression><![CDATA[$F{stock}]]></groupExpression>
 		<groupFooter>
 			<band height="22">
-				<textField>
+				<textField isBlankWhenNull="true">
 					<reportElement uuid="061782db-de93-44f8-bf5b-df9cf463d5d5" x="162" y="0" width="62" height="11"/>
 					<textElement textAlignment="Right">
 						<font size="8"/>

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="TSC-D6" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="91637d31-8a9d-46aa-9a63-b8b1c4353b9e">
 	<property name="ireport.zoom" value="2.0"/>
-	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="122"/>
+	<property name="ireport.x" value="243"/>
+	<property name="ireport.y" value="31"/>
 	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA["D:\\George\\ireport\\TSC-D1\\"]]></defaultValueExpression>
 	</parameter>
@@ -14,6 +14,7 @@
 	<field name="account_type" class="java.lang.Object"/>
 	<field name="trader_name" class="java.lang.Object"/>
 	<field name="date" class="java.lang.Object"/>
+	<field name="settlement" class="java.lang.Object"/>
 	<field name="SET_close" class="java.lang.Object"/>
 	<field name="SET_change" class="java.lang.Object"/>
 	<field name="SET_val" class="java.lang.Object"/>
@@ -116,30 +117,9 @@
 				</textElement>
 				<text><![CDATA[ DAILY CONFIRMATION AND PORTFOLIO]]></text>
 			</staticText>
-			<staticText>
-				<reportElement uuid="e0337a44-261a-4fc0-830f-82d98f82dbd7" x="426" y="92" width="45" height="11"/>
-				<textElement>
-					<font size="8"/>
-				</textElement>
-				<text><![CDATA[PAGE	:]]></text>
-			</staticText>
 			<textField>
 				<reportElement uuid="76b4b584-74a3-4ce4-bd70-d5aab4fe86ec" x="471" y="92" width="22" height="11"/>
-				<textElement>
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
-			</textField>
-			<staticText>
-				<reportElement uuid="7380bb6b-0380-4b4d-9a99-2a6339a94bf2" x="493" y="92" width="10" height="11"/>
-				<textElement>
-					<font size="8"/>
-				</textElement>
-				<text><![CDATA[/]]></text>
-			</staticText>
-			<textField>
-				<reportElement uuid="1120bbc7-c8d8-435a-8197-d87b4100ccd9" x="503" y="92" width="13" height="11"/>
-				<textElement>
+				<textElement textAlignment="Center">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
@@ -199,6 +179,27 @@
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{SET50_change}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="62b5bc80-b5c5-4c33-835d-349148452d98" x="405" y="125" width="66" height="11"/>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[SETTLEMENT :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="e4572a3c-78b0-4ff0-aaba-2b5e4cfe946b" x="439" y="92" width="32" height="11"/>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[PAGE :]]></text>
+			</staticText>
+			<textField>
+				<reportElement uuid="16fa66fa-346b-4062-b550-508aa6e4945d" x="471" y="125" width="45" height="11"/>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{settlement}]]></textFieldExpression>
 			</textField>
 		</band>
 	</pageHeader>

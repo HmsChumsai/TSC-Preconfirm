@@ -330,17 +330,17 @@ local function process()
         tick_factor = 1
         local match_avg_price = 0
         local matched_value = 0
-        if (match_qty ~= 0) then
-          -- Use value day for tickfactor for matched value.
-          if ( cdate ~= nil ) then
-            tick_factor = easygetter.EvenAmountToDouble(orderLeg:getContract():getTickFactor(nil,cdate))
-          end
-          match_avg_price = orderLeg:getAvgExecPrice()
+         if (match_qty ~= 0) then
+          -- -- Use value day for tickfactor for matched value.
+           if ( cdate ~= nil ) then
+             tick_factor = easygetter.EvenAmountToDouble(orderLeg:getContract():getTickFactor(nil,cdate))
+           end
+          match_avg_price = easygetter.EvenAmountToDouble(orderLeg:getAvgExecPrice())
           matched_value = match_qty*match_avg_price*tick_factor
-        end
-        table.insert (orderItem, {'match_price', match_avg_price })
-        table.insert (orderItem, {'matched_value', matched_value})
-        table.insert (orderItem, {'multiplier', tick_factor})
+         end
+         table.insert (orderItem, {'match_price', match_avg_price })
+         table.insert (orderItem, {'matched_value', matched_value})
+         table.insert (orderItem, {'multiplier', tick_factor})
 
         -- total qty = matched qty + open/cancel qty
         -- total value = matched value + open/cancel value

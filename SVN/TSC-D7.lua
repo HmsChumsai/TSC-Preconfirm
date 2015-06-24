@@ -7,13 +7,14 @@ local tim = require "tim"
 local maps = require "maps"
 local accpos = require "accpos"
 local mandator = require "mandator"
-
+local confirmreport = require "confirmreport"
 local depositId = ""
 local entryFrom = ""
 local entryTo = ""
 local log_file = ""
 local db_file = ""
 local format = "PDF"
+local rtutils = require "rtutils"
 
 cmdln.add{ name="--logFile", descr="", func=function(x) log_file=x end }
 cmdln.add{ name="--dbFile", descr="", func=function(x) db_file=x end }
@@ -37,7 +38,6 @@ function process()
   local dubi = require "dubi"
   local common = require "common"
   local easygetter = require "easygetter"
-  local confirmreport = require "confirmreport"
   local debug_mode = false
   local orderMatchStatusToMLMapping = {[true]="M", [false]="P"}
   local TSCReportUtil= require "TSCReportUtil"
@@ -97,6 +97,7 @@ function CreateSchema()
 	'date' .. sql_column_text
 	}},
   {table_name_order,{
+	'seq' .. sql_column_integer,
 	'order_no' .. sql_column_integer,
   'side' .. sql_column_text,
   'stock' .. sql_column_text,
@@ -157,14 +158,10 @@ function getDeposit(depositId)
   if (DECIDE_deposit_obj:hasAccountType()) then
   	table.insert (depositItem, {'account_type', DECIDE_deposit_obj:getAccountType():getName() })
 	end
-  local client = DECIDE_deposit_obj:getClient()
-  if (client:hasAccountManager()) then
-    local user = client:getAccountManager()
-    local person = user:getPerson()
-    local trader_name = person:getName()
-    print('trader_name : ' .. trader_name)
-    table.insert(depositItem,{'trader_name',trader_name})    
-  end
+  local am = rtutils.getAccountManager(DECIDE_deposit_obj) 
+	if am then
+  	table.insert(depositItem,{'trader_name',am:getName()})
+	end
 
   -- Get Credit Line --
 
@@ -252,6 +249,7 @@ function dump(o)
     return tostring(o)
   end
 end
+--confirmreport.announceGenerationSuccess("/usr/local/decide/space-BKKTSC-1/var/prot/clientConfirmation/pdf/TSC-D7-1433499012809801.pdf")
 local inst = os.getenv( "OCSINST" )
 local mand = mandator.Mandator( inst )
 mandator.changeTo( mand, process )

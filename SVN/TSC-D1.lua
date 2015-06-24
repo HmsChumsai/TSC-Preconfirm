@@ -111,7 +111,7 @@ local function process()
     {table_name_order2, { 'series'..sql_column_text,
       'side'..sql_column_text,
       "orders_unmat"..sql_column_real,
-      "quantity"..sql_column_integer,
+      "quantity"..sql_column_real,
       "cost"..sql_column_real,
       "mkt"..sql_column_real,
       "realized_pl"..sql_column_real,
@@ -282,19 +282,22 @@ local function process()
 
         local tick_factor = 1
         local matched_value = 0
-        if (match_qty ~= 0 ) then
+       if (orderLeg:getExecQty() ~= 0 ) then
           -- Use value day for tickfactor for matched value.
           if (cdate ~= nil) then
-            tick_factor = easygetter.EvenAmountToDouble(orderLeg:getContract():getTickFactor(nil,cdate));
-          end
-          local match_avg_price =  orderLeg:getAvgExecPrice()
+           tick_factor = easygetter.EvenAmountToDouble(orderLeg:getContract():getTickFactor(nil,cdate));
+           end
+          
+          local match_avg_price = easygetter.EvenAmountToDouble(orderLeg:getAvgExecPrice())
+          --print ("match_avg_price >>"..match_avg_price)
           table.insert (orderItem, {'match_price', match_avg_price})
+          
           table.insert (orderItem, {'multiplier', tick_factor})
           
           
           local cal_avg_price = (match_qty * match_avg_price)
-           table.insert (orderItem,{'avg_price',cal_avg_price})
-        end
+          table.insert (orderItem,{'avg_price',cal_avg_price})
+       end
 
         
         
@@ -372,19 +375,19 @@ local function process()
       local contract = position:getContract()
       table.insert (orderItem2, {'series', contract:getContractCode()})
 
-      local position_obj = position:getAvailableQuantity()
-      table.insert (orderItem2, {'quantity',math.abs(position_obj) })
+
+      table.insert (orderItem2, {'quantity', position:getAvailableQuantity()})
 
 
       local ok, pe = pcall( fo.PositionEvaluation, { position=position, plview="latest" } )
+      local ok2, pe2 = pcall( fo.PositionEvaluation, { position=position } )
 
-        table.insert(orderItem2,{'cost',pe:getAvgePrice()})
+        table.insert(orderItem2,{'cost',pe2:getAvgePrice()})
 
         
-      local mark_average = easygetter.EvenAmountToDouble(data.lastUnchecked)
-      table.insert (orderItem2, {'mkt', mark_average})
+      table.insert (orderItem2, {'mkt', pe2:getContractEvaluation():getLastUnchecked()})
 
-      local position_short_long = position:getQuantitySign()
+      local position_short_long = position:getShortLong()
       table.insert (orderItem2, {'side', position_short_long})
 
 
@@ -397,12 +400,9 @@ local function process()
         table.insert(orderItem2,{'orders_unmat',position:getOrdersSell()})
         end
 
-        
-        
-      local realized = easygetter.EvenAmountToDouble(data.startToEndRPL)
-      table.insert (orderItem2, {'realized_pl', realized})
-      local unrealized = easygetter.EvenAmountToDouble(data.endUPL)
-      table.insert (orderItem2, {'unrealized_pl', unrealized})
+ 
+      table.insert (orderItem2, {'realized_pl',pe:getRplGrossMZ()})
+      table.insert (orderItem2, {'unrealized_pl', pe2:getUplGrossMZ()})
 
       table.insert (orderList2, orderItem2)
     --end
