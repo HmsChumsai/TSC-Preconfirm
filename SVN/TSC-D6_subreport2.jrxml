@@ -4,6 +4,9 @@
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<property name="ireport.callouts" value="##Wed Mar 19 16:44:18 CST 2014"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["C:\\Users\\SSBKL012DEV\\Desktop\\TSC-Preconfirm\\SVN\\"]]></defaultValueExpression>
+	</parameter>
 	<queryString>
 		<![CDATA[select decide_order.seq,decide_order.side,decide_order.stock,sum(decide_order.vol),decide_order.price,sum(decide_order.gross_amt),sum(decide_order.comm_fee),sum(decide_order.vat),sum(decide_order.amount_due),decide_total.comm,decide_total.total_amount_due,decide_total.total_gross,decide_total.vat,decide_total.net,decide_total.paid_received
 from decide_order,decide_total
@@ -168,6 +171,11 @@ order by side,stock,price desc]]>
 				<line>
 					<reportElement uuid="d61b2d00-7032-4cfc-8b6b-1a2e9788bf3f" x="125" y="15" width="430" height="1"/>
 				</line>
+				<subreport>
+					<reportElement uuid="96c1c78b-ed2f-4435-8178-4264c3e281da" x="2" y="24" width="170" height="84"/>
+					<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "TSC-D6_subreport2_subreport1.jasper"]]></subreportExpression>
+				</subreport>
 			</band>
 		</groupFooter>
 	</group>

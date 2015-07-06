@@ -178,7 +178,7 @@ order by order_no]]>
 			</textField>
 			<textField>
 				<reportElement uuid="a45f1161-2d89-403b-aba1-7e81e5b790ae" x="380" y="0" width="20" height="11"/>
-				<textElement textAlignment="Center">
+				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{st}]]></textFieldExpression>

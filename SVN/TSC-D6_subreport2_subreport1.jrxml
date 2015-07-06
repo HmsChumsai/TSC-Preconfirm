@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="TSC-D6_subreport2_subreport1" language="groovy" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="a8a42e28-2c93-4b91-bb2c-eee9c83163ca">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<queryString language="SQL">
+		<![CDATA[select * from decide_order]]>
+	</queryString>
+	<field name="seq" class="java.lang.Object"/>
+	<field name="order_no" class="java.lang.Object"/>
+	<field name="side" class="java.lang.Object"/>
+	<field name="stock" class="java.lang.Object"/>
+	<field name="vol" class="java.lang.Object"/>
+	<field name="price" class="java.lang.Object"/>
+	<field name="gross_amt" class="java.lang.Object"/>
+	<field name="comm_fee" class="java.lang.Object"/>
+	<field name="vat" class="java.lang.Object"/>
+	<field name="amount_due" class="java.lang.Object"/>
+	<field name="ttf" class="java.lang.Object"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="79" splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band height="35" splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="61" splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band height="125" splitType="Stretch"/>
+	</detail>
+	<columnFooter>
+		<band height="45" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="54" splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch"/>
+	</summary>
+</jasperReport>

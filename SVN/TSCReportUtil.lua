@@ -2,7 +2,8 @@ TSCReportUtil={}
 local utils = require('utils')
 local tim = require('tim')
 local dubi = require('dubi')
-
+local fo = require("fo")
+local maps = require('maps')
 function TSCReportUtil.GetOrders( depositId, entryFrom, entryTo, handleAfc )
 	local options = {}
 	if ( entryFrom ~= nil and entryFrom ~= "" ) then
@@ -44,6 +45,9 @@ function TSCReportUtil.getOrderList(orders,isBillOrder)
 	local ttfMapping={}
 	ttfMapping['NVDR']=2
 	ttfMapping['TTF']=1
+	local orderChangeStatusMapping = {}
+	orderChangeStatusMapping['OC']=1
+	orderChangeStatusMapping['MC']=1
 	local orderMatchStatusToMLMapping = {[true]="M", [false]="P"}
 	local orderList= {}
 	local totalList={}
@@ -57,18 +61,22 @@ function TSCReportUtil.getOrderList(orders,isBillOrder)
 		local ttf=''
 		local seq=''
 		local isAfc = order:getAfterCloseOrder() ~="Pending"
-		print("order no. : "..no)
+		--print("order no. : "..no)
 		--print(" order:getAfterCloseOrder() : "..order:getAfterCloseOrder())
 		local orderHandlingType = order:getHandlingType()
 		if ((orderHandlingType == 'TradingOrder' or orderHandlingType == 'BlockTrade') and isAfc) then
 			local orderlegs = order:getOrderLegs()
+			local st = order:getCustomStatus()
 			for _,orderleg in pairs(orderlegs) do
 				local match_qty = orderleg:getExecQty()
 
 				if (match_qty~=0 or isBillOrder==1 ) then	
+					print("match_qty",match_qty)
 					local orderItem = {}
 					local vol=0
+					local vat = 0
 					local price=0
+					local comm_fee = 0
 					local contract=fo.getOrderContract(order)
 					local symbol= contract:getSymbol() 
 
@@ -77,49 +85,77 @@ function TSCReportUtil.getOrderList(orders,isBillOrder)
 					local execQty = orderleg:getExecQty()
 					local status = orderMatchStatusToMLMapping[totalQty == execQty]
 					local tran_time=0
-					if (isBillOrder==1) then
-						local entry=order:getEntryUser():getName()
-						vol = orderleg:getTotalQty()
-						price = orderleg:getPriceLimit()
-						local orderOperations = order:getOrderOperations()
-						local deal_seq=0
-						for _,op in pairs( orderOperations ) do
-							if op:getTransactionType() ~= "Entry" then	
-								local opLegs=op:getOrderOperationLegs()
-								for _,opLeg in pairs (opLegs) do
-									deal_seq=deal_seq+1
-									local dealItem = {}
-									tran_time=op:getEntryTime():addHours(7):toString("%T")
-									local deal_qty = opLeg:getExecQty()
-									local deal_price = opLeg:getPrice()
-									local deal_time = op:getEntryTime():addHours(7):toString("%T")
-
-									table.insert(dealItem ,{'order_no',no})
-									table.insert(dealItem ,{'deal_seq',deal_seq})
-									table.insert(dealItem ,{'deal_price',deal_price})
-									table.insert(dealItem ,{'deal_qty',deal_qty})
-									table.insert(dealItem ,{'deal_time',deal_time})
-									table.insert(dealList,dealItem)
-
+				--if (isBillOrder==1) then
+					local entry=order:getEntryUser():getName()
+					vol = orderleg:getTotalQty()
+					price = orderleg:getPriceLimit()
+					local orderOperations = order:getOrderOperations()
+					local deal_seq=0
+					local passZero = 0
+					for _,op in pairs( orderOperations ) do
+						
+						if op:getTransactionType() ~= "Entry" then	
+							local opLegs=op:getOrderOperationLegs()
+							
+							for _,opLeg in pairs (opLegs) do
+								deal_seq=deal_seq+1
+								local dealItem = {}
+								tran_time=op:getEntryTime():addHours(7):toString("%T")
+								local deal_qty = opLeg:getExecQty()
+								local deal_price = opLeg:getPrice()
+								local deal_time = op:getEntryTime():addHours(7):toString("%T")
+								if opLeg:hasTransaction() then
+									local ta = opLeg:getEffectiveTransaction()
+									local posting = ta:getPosting()
+									comm_fee = comm_fee + easygetter.EvenAmountToDouble(posting:getFeeAccountCurr(ut,"Custodian"))
+									vat = vat+easygetter.EvenAmountToDouble(posting:getFeeAccountCurr(ut,"Settlement"))
+								end
+								if (isBillOrder==1) then
+									
+										table.insert(dealItem ,{'order_no',no})
+										table.insert(dealItem ,{'deal_seq',deal_seq})
+										table.insert(dealItem ,{'deal_price',deal_price})
+										table.insert(dealItem ,{'deal_qty',deal_qty})
+										table.insert(dealItem ,{'deal_time',deal_time})
+									if orderChangeStatusMapping[st]==1 then-- If this order has change order status , skip minus qty
+										if passZero==1 and deal_qty>0 then
+											table.insert(dealList,dealItem)
+										end	
+										
+										if deal_qty == 0 then
+											passZero = 1
+										end
+										
+									else  
+										if deal_qty>0 then
+											table.insert(dealList,dealItem)
+										end
+									end
 								end
 							end
 						end
-						time =order:getEntryTime():addHours(7):toString("%T") 
-						local totalQty = orderleg:getOpenQty()
+					end
+					time =order:getEntryTime():addHours(7):toString("%T") 
+					local totalQty = orderleg:getOpenQty()
+					if (isBillOrder==1) then
 						table.insert(orderItem,{'matched',match_qty})
 						table.insert(orderItem,{'entry',entry})
 						table.insert(orderItem,{'time',time})
 						table.insert(orderItem,{'tran_time',tran_time})
-						table.insert(orderItem, {'st', M.getStatus(order:getOrderId())})
+						--print(utils.prettystr(fo))
+						--local st =  getOrderStatus(order:getOrderId())
+						--table.insert(orderItem, {'st',order:getCustomStatus()})
+						table.insert(orderItem, {'st',st})
+						
 					else
 						price = orderleg:getAvgExecPrice()
 						price = easygetter.EvenAmountToDouble(price)
 						vol = execQty
 					end
-					local comm_vat = getFee(order,orderleg)
-
-					local comm_fee = comm_vat/(1.07)
-					local vat=comm_vat-comm_fee
+					--local comm_vat = getFee(order,orderleg)
+					local comm_vat = comm_fee + vat
+					--local comm_fee = comm_vat/(1.07)
+					--local vat=comm_vat-comm_fee
 					local gross_amt=vol*price
 					local amount_due=0.0
 
@@ -134,13 +170,6 @@ function TSCReportUtil.getOrderList(orders,isBillOrder)
 						total_gross=total_gross+gross_amt
 						net = net + amount_due
 					end
-					if (isBillOrder==1) then 
-						table.insert(orderItem,{'matched',match_qty})
-						table.insert(orderItem,{'entry',entry})
-						table.insert(orderItem,{'time',time})
-						table.insert(orderItem,{'tran_time',tran_time})
-						table.insert(orderItem, {'st', M.getStatus(order:getOrderId())})
-					end
 
 					table.insert (orderItem,{'ttf',ttfMapping[ttf] or '' })
 					table.insert (orderItem,{'order_no',no})
@@ -149,7 +178,7 @@ function TSCReportUtil.getOrderList(orders,isBillOrder)
 					local seq_item = {}
 					local seq=''
 					seq_item = {['symbol']= symbol,['price']=price}
-					--print("seq_item : ",utils.prettystr(seq_item))
+					--rrint("seq_item : ",utils.prettystr(seq_item))
 					if buy_sell =='Buy' then
 						--print("-------------------------- BUY -----------------------")
 						if (#port_seq_buy==0) then
@@ -224,6 +253,21 @@ function TSCReportUtil.getOrderList(orders,isBillOrder)
 					table.insert (orderItem,{'gross_amt',gross_amt})
 					table.insert (orderItem,{'amount_due',amount_due})
 					table.insert (orderItem,{'seq',seq})
+					if isBillOrder==1 then
+						local condition = order:getOrderLimitType()
+						if condition=='LimitIceberg' then
+							table.insert(orderItem,{'condition','Iceberg'})
+						end
+
+						local hasPeakQty = false
+						for _,val in pairs(maps.MenuOrdLimTypeHasPeakQty()) do
+							--print("vallll : ",val,"condition : ",condition)
+							if condition==val then hasPeakQty = true end
+						end
+						if hasPeakQty then 
+							table.insert(orderItem,{'publish',orderleg:getPeakQty()}) 
+						end
+					end
 					table.insert(orderList,orderItem)
 				end
 				--print("port_seq : " ,utils.prettystr(port_seq))
@@ -250,6 +294,11 @@ function TSCReportUtil.getOrderList(orders,isBillOrder)
 	print('----------- End getOrderList--------')
 	return orderList,totalList,dealList --dealList for Bill Order(TSC-D7) only
 end
+
+function getOrderStatus(orderId)
+		return orderId and fo.getCustomOrderStatus(orderId) or nil
+	--return status
+end
 function setSeq(orderList,port_seq_sell,port_seq_buy)
 	local context_buy = {}
 	local context_sell = {}
@@ -274,8 +323,13 @@ function setSeq(orderList,port_seq_sell,port_seq_buy)
 			end
 		else
 			if context_sell[j[3][2]..j[8][2]] and context_sell[j[3][2]..j[8][2]] ~= nil then
+				print("============================================================")
+				print("============================================================")
+				print(context_sell[j[3][2]..j[8][2]],context_sell[j[3][2]..j[8][2]])
 				j[11][2] = context_sell[j[3][2]..j[8][2]]
 			
+				print("============================================================")
+				print("============================================================")
 			else
 				j[11][2] = ''
 			end
